@@ -1,0 +1,35 @@
+name: Client Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  client:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: 18
+
+    - name: Install Dependencies
+      run: npm ci
+      working-directory: client
+
+    - name: Lint
+      run: npm run lint
+      working-directory: client
+
+    - name: Test
+      run: npm run test --if-present
+      working-directory: client
+
+    - name: Build
+      run: npm run build
+      working-directory: client
