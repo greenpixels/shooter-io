@@ -59,7 +59,7 @@ function App(props: { socket: Socket }) {
     }
     document.addEventListener("keydown", (ev) => on_key_event(ev, true, props.socket))
     document.addEventListener("keyup", (ev) => on_key_event(ev, false, props.socket))
-  }, [game, gameViewRef, running, props.socket.id]);
+  }, [game, gameViewRef, running, props.socket, players, projectiles, props.socket.id]);
 
   useEffect(() => {
     // This useEffect unmounts the game and resets it, allowing HMR to properly work when developing with vite
@@ -71,7 +71,7 @@ function App(props: { socket: Socket }) {
         document.removeEventListener("keyup", (ev) => on_key_event(ev, false, props.socket))
       }
     }
-  }, [game]);
+  }, [game, props.socket]);
 
   return (
     <div>
@@ -81,11 +81,12 @@ function App(props: { socket: Socket }) {
 }
 
 function on_game_ready(game : PIXI.Application<HTMLCanvasElement>) {
-  game.ticker.add(on_game_step)
+  console.log(game)
+  //game.ticker.add(on_game_step)
 }
 
-function on_game_step(delta : number) {
-}
+//function on_game_step(_delta : number) {
+//}
 
 function on_player_spawn_event(game : PIXI.Application<HTMLCanvasElement>, current_players : {[key : string] : Player}, received_players : {[key : string] : PlayerDTO}, set_players: React.Dispatch<React.SetStateAction<{[key: string]: Player}>>) {
   Object.keys(received_players).forEach((id) => {
