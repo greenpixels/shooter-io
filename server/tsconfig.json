@@ -1,4 +1,5 @@
 {
+    "include": ["src/**/*", "../shared/**/*"],
     "compilerOptions": {
       "target": "es2016",
       "module": "commonjs",
@@ -6,6 +7,8 @@
       "esModuleInterop": true,
       "skipLibCheck": true,
       "forceConsistentCasingInFileNames": true,
-      "rootDir": "src"
+      "paths": {
+        "@shared/*": ["../shared/*"]
+      },
     }
   }
