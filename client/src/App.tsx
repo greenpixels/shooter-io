@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from "react"
 import { Socket } from "socket.io-client"
-import { GameStateDTO } from "../../shared/GameStateDTO";
+import { GameStateDTO } from "@shared/dtos/GameStateDTO.ts";
 import * as PIXI from 'pixi.js'
-import { ProjectileDTO } from "@shared/ProjectileDTO";
-import { EventInformationDTO} from "@shared/EventInformationDTO";
-import {EventInformationType} from "@shared/enums/EventInformationType"
+import { ProjectileDTO } from "@shared/dtos/ProjectileDTO.ts";
+import { EventInformationDTO} from "@shared/dtos/EventInformationDTO.ts";
+import { EventInformationType } from "@shared/enums/EventInformationType"
 import { SOCKET_EVENT } from "@shared/enums/SocketEvents";
 import { MoveEvent } from "@shared/MoveEvent"
 import { MOVE_DIRECTION } from "@shared/enums/MoveDirection";
 import { Player } from "./types/Player";
-import { PlayerDTO } from "@shared/PlayerDTO";
+import { PlayerDTO } from "@shared/dtos/PlayerDTO.ts";
 import { Projectile } from "./types/Projectile";
-import { EntityDTO } from "@shared/EntityDTO";
+import { EntityDTO } from "@shared/dtos/EntityDTO.ts";
 
 const canvasSize = { width: 640, height: 360 }
 const canvasScale = 2

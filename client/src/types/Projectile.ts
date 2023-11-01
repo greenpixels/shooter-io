@@ -1,4 +1,4 @@
-import { ProjectileDTO } from "@shared/ProjectileDTO";
+import { ProjectileDTO } from "@shared/dtos/ProjectileDTO.ts";
 import { Entity } from "./Entity";
 
 export class Projectile extends Entity<ProjectileDTO> {
