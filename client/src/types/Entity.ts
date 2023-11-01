@@ -1,6 +1,6 @@
-import { Vector2 } from "@shared/Vector2";
+import { Vector2DTO } from "@shared/dtos/Vector2DTO.ts";
 import * as PIXI from 'pixi.js'
-import { EntityDTO } from "@shared/EntityDTO"
+import { EntityDTO } from "@shared/dtos/EntityDTO.ts"
 
 export abstract class Entity<T extends EntityDTO> {
     private readonly _id: string;
@@ -24,7 +24,7 @@ export abstract class Entity<T extends EntityDTO> {
         return this._sprite;
     }
 
-    set position(position: Vector2) {
+    set position(position: Vector2DTO) {
         this._sprite.position = position;
     }
 

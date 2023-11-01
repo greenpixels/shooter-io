@@ -1,4 +1,4 @@
-import { PlayerDTO } from "@shared/PlayerDTO";
+import { PlayerDTO } from "@shared/dtos/PlayerDTO.ts";
 import {Entity} from "./Entity"
 
 export class Player extends Entity<PlayerDTO> {

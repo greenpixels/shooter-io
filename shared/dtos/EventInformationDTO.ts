@@ -1,4 +1,4 @@
-import { EventInformationType } from "./enums/EventInformationType"
+import { EventInformationType } from "../enums/EventInformationType"
 
 export interface EventInformationDTO<T> {
     type: EventInformationType

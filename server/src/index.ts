@@ -2,9 +2,9 @@ import express from 'express';
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import {SOCKET_EVENT} from "../../shared/enums/SocketEvents"
-import {EventInformationDTO} from "../../shared/EventInformationDTO"
+import {EventInformationDTO} from "@shared/dtos/EventInformationDTO"
 import { EventInformationType } from '../../shared/enums/EventInformationType';
-import {PlayerDTO} from "../../shared/PlayerDTO"
+import {PlayerDTO} from "@shared/dtos/PlayerDTO"
 
 const app = express();
 const server = createServer(app);
