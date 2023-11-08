@@ -17,7 +17,7 @@ export abstract class Entity<T extends EntityDTO> {
     }
 
     get position() {
-        return this._sprite.position;
+        return {x: this._sprite.position.x, y: this._sprite.position.y};
     }
 
     get sprite() {
@@ -25,7 +25,8 @@ export abstract class Entity<T extends EntityDTO> {
     }
 
     set position(position: Vector2DTO) {
-        this._sprite.position = position;
+        this._sprite.position.x = position.x;
+        this._sprite.position.y = position.y;
     }
 
     public abstract sync(dto : T) : void

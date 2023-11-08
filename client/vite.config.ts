@@ -9,6 +9,12 @@ export default defineConfig({
   define: {
     APP_VERSION: JSON.stringify(process.env.npm_package_version),
   },
+  server: {
+    port: 3000
+  },
+  preview: {
+    port: 3000
+  },
   resolve: {
     alias: [
       {find: "@shared", replacement: path.resolve(__dirname, "../shared")}
