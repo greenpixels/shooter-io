@@ -16,10 +16,10 @@ const io = new Server(server, {
   }
 });
 
-const game_handler = new ServerGameHandler(io)
+const gameHandler = new ServerGameHandler(io)
 
 io.on('connection', (socket) => {
-  game_handler.add_player(socket)
+  gameHandler.addPlayer(socket)
 });
 
 server.listen(8080, () => {

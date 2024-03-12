@@ -44,7 +44,7 @@ export class Vector2 implements Vector2DTO {
         this._y *= vector.y;
     }
 
-    public mul_scalar(scalar: number): void {
+    public mulScalar(scalar: number): void {
         this._x *= scalar;
         this._y *= scalar;
     }
@@ -54,7 +54,7 @@ export class Vector2 implements Vector2DTO {
         this._y /= vector.y;
     }
 
-    public div_scalar(scalar: number): void {
+    public divScalar(scalar: number): void {
         this._x /= scalar;
         this._y /= scalar;
     }
