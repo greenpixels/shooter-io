@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  client:
+  server:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,16 +20,40 @@ jobs:
 
     - name: Install Dependencies
       run: npm ci
-      working-directory: client
 
-    - name: Lint
+    - name: Audit depencdencies
+      run: npm audit
+
+    # Server Pipeline
+
+    - name: Server - Lint
+      run: npm run lint
+      working-directory: server
+
+    - name: Server - Test
+      run: npm run test --if-present
+      working-directory: server
+
+    # Client Pipeline
+
+    - name: Client - Lint
       run: npm run lint
       working-directory: client
 
-    - name: Test
+    - name: Client - Test
       run: npm run test --if-present
       working-directory: client
 
-    - name: Build
+    - name: Client - Build
       run: npm run build
       working-directory: client
+
+    # Shared Pipeline
+
+    - name: Shared - Lint
+      run: npm run lint
+      working-directory: shared
+
+    - name: Shared - Test
+      run: npm run test --if-present
+      working-directory: shared

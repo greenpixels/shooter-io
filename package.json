@@ -1,0 +1,21 @@
+{
+  "name": "shooter-io",
+  "workspaces": ["client", "server", "shared"],
+  
+  "scripts": {
+    "dev": "npm run start -w @shooter-io/server"
+  },
+
+  "version": "0.0.1",
+  "private": true,
+  "license": "ISC",
+
+  "devDependencies": {
+    "typescript": "^5.4.2",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0"
+  }
+}
