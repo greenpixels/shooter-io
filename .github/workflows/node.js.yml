@@ -1,5 +1,10 @@
 name: Client Workflow
 
+on:
+  push:
+    branches:
+      - '*'
+
 jobs:
   server:
     runs-on: ubuntu-latest
