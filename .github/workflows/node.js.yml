@@ -6,7 +6,7 @@ on:
       - '*'
 
 jobs:
-  server:
+  "project lifecycle":
     runs-on: ubuntu-latest
 
     steps:
