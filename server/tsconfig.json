@@ -1,14 +1,9 @@
 {
     "include": ["src/**/*", "../shared/**/*"],
     "compilerOptions": {
-      "target": "es2016",
-      "module": "commonjs",
-      "strict": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true,
       "paths": {
         "@shared/*": ["../shared/*"]
       },
-    }
+    },
+    "extends": ["../tsconfig.base.json"],
   }
