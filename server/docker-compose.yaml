@@ -12,7 +12,7 @@ services:
     working_dir: /app
     command: ["node", "index.js"]
     networks:
-      shooter_io_server_network
+      - shooter_io_server_network
 
 networks:
   shooter_io_server_network:

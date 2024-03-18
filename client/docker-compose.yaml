@@ -10,7 +10,7 @@ services:
     volumes:
     - ./dist:/usr/local/apache2/htdocs
     networks:
-      shooter_io_client_network
+      - shooter_io_client_network
 
 networks:
   shooter_io_client_network:
