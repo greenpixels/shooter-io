@@ -1,6 +1,11 @@
 name: Deployment
 
-on: [workflow_dispatch]
+on: 
+  workflow_dispatch:
+    inputs:
+      origin_run_id:
+        description: The ID of the workflow that triggered this workflow
+        required: true
 
 jobs:
   deploy:
