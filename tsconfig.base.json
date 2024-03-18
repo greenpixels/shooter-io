@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+
+      "useDefineForClassFields": true,
+      
+      "skipLibCheck": true,
+  
+      "strict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noFallthroughCasesInSwitch": true
+    },
+    
+    "references": [{ "path": "./tsconfig.node.json" }]
+  }
+  

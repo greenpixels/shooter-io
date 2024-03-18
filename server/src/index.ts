@@ -1,8 +1,8 @@
-import express from 'express';
+import * as express from 'express';
 import {createServer} from 'node:http';
 import {Server} from 'socket.io';
 import { ServerGameHandler } from './ServerGameHandler';
-import cors from 'cors';
+import * as cors from 'cors';
 
 const app = express();
 
@@ -16,11 +16,17 @@ const io = new Server(server, {
   }
 });
 
-const game_handler = new ServerGameHandler(io)
+const gameHandler = new ServerGameHandler(io)
 
 io.on('connection', (socket) => {
-  game_handler.add_player(socket)
+  gameHandler.addPlayer(socket)
+
+  socket.on('disconnect', () => {
+    gameHandler.removePlayer(socket)
+  });
 });
+
+
 
 server.listen(8080, () => {
   console.log('server running at http://localhost:8080');
