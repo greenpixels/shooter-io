@@ -9,6 +9,8 @@ services:
     - '80:80'
     volumes:
     - ./client:/usr/local/apache2/htdocs
+    networks:
+      shooter_io_client_network
 
 networks:
   shooter_io_client_network:
