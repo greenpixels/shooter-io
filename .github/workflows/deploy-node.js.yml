@@ -1,9 +1,16 @@
 name: Deployment
 
-on: [workflow_dispatch]
+on:
+  workflow_run:
+    branches:
+      - '*' # Should be main
+    workflows:
+      - Preflight
+    types:
+      - completed
 
 jobs:
-  lifecycle:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
