@@ -12,12 +12,14 @@ jobs:
       with:
         name: client
         run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ secrets.PAT }} 
 
     - name: Download client artifact
       uses: actions/download-artifact@v4
       with:
         name: server
         run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ secrets.PAT }} 
 
     - name: Output folder structure
       run: ls -R -a
