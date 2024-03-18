@@ -59,8 +59,9 @@ jobs:
       working-directory: shared
 
     - name: Trigger deployment workflow
-      #if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main'
       uses: benc-uk/workflow-dispatch@v1
       with:
         workflow: Deployment
+        # On credentials issues: Remember that the token will be invalidated after a specific time period
         token: ${{ secrets.PAT }}
