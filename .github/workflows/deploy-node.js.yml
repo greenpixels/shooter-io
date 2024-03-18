@@ -17,11 +17,11 @@ jobs:
 
     - name: Deploy server artifact to production server
       run: |
-        scp -i temp_key -r server root@217.160.53.253:/data/stacks/shooter-io-server
+        scp -o StrictHostKeyChecking=no -v -i temp_key -r server root@217.160.53.253:/data/stacks/shooter-io-server
 
     - name: Deploy client artifact to production server
       run: |
-        scp -i temp_key -r client root@217.160.53.253:/data/stacks/shooter-io-client
+        scp -o StrictHostKeyChecking=no -v -i temp_key -r client root@217.160.53.253:/data/stacks/shooter-io-client
     
     - name: Clean up temp files
       run: rm temp_key
