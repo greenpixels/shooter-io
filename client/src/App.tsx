@@ -15,21 +15,28 @@ function App(props: { socket: Socket }) {
 
   useEffect(() => {
     const viewRef = gameViewRef.current
+    const handleTabClose = () => {
+      console.log("Disconnecting")
+      props.socket.disconnect()
+    };
     if (game === null && viewRef) {
       const newGame = new PIXI.Application<HTMLCanvasElement>({ view: viewRef, ...{canvasSize} });
       setGame(newGame)
     } else if(game !== null && !running) {
       setRunning(true)
       const eventHandler = new ClientGameHandler({game: game, socket: props.socket})
+      
       document.addEventListener("keydown", (ev) => eventHandler.handleInput(ev, true))
       document.addEventListener("keyup", (ev) => eventHandler.handleInput(ev, false))
+      window.addEventListener('beforeunload', handleTabClose);
       setEventHandler(eventHandler)
     }
 
     return () => {
-      if(game !== null && viewRef && running) {
+      if(game !== null && viewRef !== undefined && running) {
         setGame(null)
         setRunning(false)
+        window.removeEventListener('beforeunload', handleTabClose);
         document.removeEventListener("keydown", (ev) => eventHandler?.handleInput(ev, true))
         document.removeEventListener("keyup", (ev) => eventHandler?.handleInput(ev, false))
       }

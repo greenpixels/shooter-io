@@ -11,7 +11,7 @@ export class Player implements PlayerDTO {
 
     constructor(socket : Socket, position: Vector2DTO) {
         this.socket = socket
-        this.id = socket.id
+        this.id = this.socket.id
         this.position = position
     }
 }

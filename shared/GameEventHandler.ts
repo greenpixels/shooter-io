@@ -13,6 +13,9 @@ export abstract class GameEventHandler {
     EVENT_PLAYER_SPAWN = "player_spawn_event"
     abstract playerSpawn(affectedPlayers: { [key: string]: PlayerDTO; }) : void
 
+    EVENT_PLAYER_LEAVE = "player_leave_event"
+    abstract playerLeave(affectedPlayers: { [key: string]: PlayerDTO; }) : void
+
     EVENT_PROJECTILE_SPAWN = "projectile_spawn_event"
     abstract projectileSpawn(...args : Array<unknown>) : void
 

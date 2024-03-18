@@ -2,7 +2,6 @@ import { GameEventHandler } from "../../shared/GameEventHandler";
 import { MOVE_DIRECTION } from "../../shared/enums/MoveDirection";
 import { Server, Socket } from "socket.io";
 import { PlayerDTO } from "../../shared/dtos/PlayerDTO";
-import { ProjectileDTO } from "../../shared/dtos/ProjectileDTO";
 import { Player } from "./types/Player";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
@@ -17,20 +16,29 @@ export class ServerGameHandler extends GameEventHandler {
     }
 
     addPlayer(socket: Socket) {
+        console.log(`A player with the socket ID ${socket.id} has connected!`)
         const newPlayer = new Player(socket, {x: 50, y: 50})
         this.players[socket.id] = newPlayer
         this.playerSpawn({[socket.id] : {id: socket.id, position: newPlayer.position}})
         socket.on(this.EVENT_PLAYER_MOVE, this.playerMove.bind(this))
     }
 
-    
-    gameTick(visiblePlayers: { [key: string]: PlayerDTO; }, visibleProjectiles: { [key: string]: ProjectileDTO; }): void { // eslint-disable-line  @typescript-eslint/no-unused-vars
+    removePlayer(socket: Socket) {
+        console.log(`A player with the socket ID ${socket.id} has disconnected!`)
+        if(this.players[socket.id] !== undefined) {
+            this.playerLeave({[socket.id] : {id: socket.id, position: this.players[socket.id].position}})
+            delete this.players[socket.id] 
+        }
+    }
+
+    // @ts-expect-error  @typescript-eslint/no-unused-vars As of now we are not  using projectiles, so the argument is still unused
+    gameTick(visiblePlayers: { [key: string]: Player; }, visibleProjectiles: { [key: string]: Projectile; }): void {     //  eslint-disable-line  @typescript-eslint/no-unused-vars 
         
         // TODO: We need to find a way to quickly convert the stored players to DTOs in order to send them over. This just ain't it.
         // We should re-think the dto-architecture all together
         const playerDtoMap : { [key: string]: PlayerDTO; } = {}
-        Object.keys(this.players).forEach((id) => {
-            const original = this.players[id]
+        Object.keys(visiblePlayers).forEach((id) => {
+            const original = visiblePlayers[id]
             original.position.x += original.velocity.x
             original.position.y += original.velocity.y
             playerDtoMap[id] = {id: original.id, position: original.position}
@@ -43,6 +51,11 @@ export class ServerGameHandler extends GameEventHandler {
     playerSpawn(affectedPlayers: { [key: string]: PlayerDTO; }): void {
         this.server.emit(this.EVENT_PLAYER_SPAWN, affectedPlayers)
     }
+
+    playerLeave(affectedPlayers: { [key: string] : PlayerDTO;}) : void {
+        this.server.emit(this.EVENT_PLAYER_LEAVE, affectedPlayers)
+    }
+
     projectileSpawn(...args: Array<unknown>): void {
         throw new Error("Method not implemented." + args);
     }

@@ -25,7 +25,7 @@ export class ClientGameHandler extends GameEventHandler {
         this.socket.on(this.EVENT_GAME_TICK, this.gameTick.bind(this))
         this.socket.on(this.EVENT_PLAYER_SPAWN, this.playerSpawn.bind(this))
         this.socket.on(this.EVENT_PLAYER_DEATH, this.playerDeath.bind(this))
-        
+        this.socket.on(this.EVENT_PLAYER_LEAVE, this.playerLeave.bind(this))
     }
 
     handleInput(ev: KeyboardEvent, isKeyDown: boolean) {
@@ -81,11 +81,27 @@ export class ClientGameHandler extends GameEventHandler {
           })
     }
 
+    playerLeave(affectedPlayers: { [key: string]: PlayerDTO; }): void {
+        console.log("Trying to remove player")
+        Object.keys(affectedPlayers).forEach((id) =>  {
+            if(this.players[id] !== undefined) {
+                // A player left the game
+                console.log("A player was removed")
+                this.removePlayer(id)
+              }
+          })
+    }
+
     addPlayer(id: string, dto: PlayerDTO) {
         const playerSprite = PIXI.Sprite.from('https://pixijs.com/assets/bunny.png')
         this.game.stage.addChild(playerSprite)
         const newPlayer = new Player(playerSprite, dto)
         this.players = {...this.players, ...{[id]: newPlayer}}
+    }
+
+    removePlayer(id: string) {
+        this.game.stage.removeChild(this.players[id].sprite)
+        delete this.players[id]
     }
 
     projectileSpawn(...args: Array<unknown>): void {
