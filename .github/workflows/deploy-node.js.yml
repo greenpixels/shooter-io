@@ -12,7 +12,7 @@ jobs:
 
     - name: Setup Private Key
       run: |
-        echo "$PRIVATE_KEY" > temp_key
+        echo ${{secrets.DEPLOYMENT_PK}} > temp_key
         chmod 600 temp_key
 
     - name: Deploy server artifact to production server
