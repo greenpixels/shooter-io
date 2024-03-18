@@ -1,4 +1,4 @@
-name: Project Lifecycle
+name: Lifecycle
 
 on:
   push:

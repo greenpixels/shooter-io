@@ -5,7 +5,7 @@ on:
     branches:
       - '*' # Should be main
     workflows:
-      - Preflight
+      - Lifecycle
     types:
       - completed
 
