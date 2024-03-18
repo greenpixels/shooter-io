@@ -4,6 +4,7 @@
       "paths": {
         "@shared/*": ["../shared/*"]
       },
+      "outDir": "tsc_output",
       "moduleResolution": "node",
       "module": "CommonJS",
       "target": "ESNext"
