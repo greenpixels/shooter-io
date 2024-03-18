@@ -57,3 +57,9 @@ jobs:
     - name: Shared - Test
       run: npm run test --if-present
       working-directory: shared
+
+    - name: Trigger deployment workflow
+      if: github.ref == "refs/heads/main"
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: Deployment

@@ -1,9 +1,6 @@
 name: Deployment
 
-on:
-  push:
-    branches:
-      - '*' # Should be master once the branch is done setting up
+on: [workflow_dispatch]
 
 jobs:
   lifecycle:
