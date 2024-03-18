@@ -4,6 +4,9 @@
       "paths": {
         "@shared/*": ["../shared/*"]
       },
+      "moduleResolution": "node",
+      "module": "CommonJS",
+      "target": "ESNext"
     },
-    "extends": ["../tsconfig.base.json"],
+    "extends": "../tsconfig.base.json",
   }

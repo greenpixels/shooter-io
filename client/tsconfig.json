@@ -5,7 +5,9 @@
       "paths": {
         "@shared/*": ["../shared/*"]
       },
-  
+
+      "target": "ESNext",
+      "module": "ESNext",
       "moduleResolution": "bundler",
       "allowImportingTsExtensions": true,
       "resolveJsonModule": true,

@@ -2,7 +2,7 @@
   "name": "@shooter-io/server",
 
   "scripts": {
-    "start": "ts-node --esm src/index.ts",
+    "start": "ts-node src/index.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   
