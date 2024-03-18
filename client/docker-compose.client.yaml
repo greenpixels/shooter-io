@@ -1,0 +1,17 @@
+# This file will be used for production-use only. 
+
+version: '3.9'
+services:
+ apache:
+    image: httpd:latest
+    container_name: shooter-io-client-web-server
+    ports:
+    - '80:80'
+    volumes:
+    - ./client:/usr/local/apache2/htdocs
+    networks:
+      - shooter_io_client_network
+
+networks:
+  shooter_io_client_network:
+    name: shooter_io_client_network

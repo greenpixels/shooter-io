@@ -1,4 +1,4 @@
-name: Client Workflow
+name: Lifecycle
 
 on:
   push:
@@ -34,6 +34,16 @@ jobs:
       run: npm run test --if-present
       working-directory: server
 
+    - name: Server - Build
+      run: npm run build
+      working-directory: server
+
+    - name: Store server artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: server
+        path: server/dist
+
     # Client Pipeline
 
     - name: Client - Lint
@@ -47,6 +57,12 @@ jobs:
     - name: Client - Build
       run: npm run build
       working-directory: client
+    
+    - name: Store client artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: client
+        path: client/dist
 
     # Shared Pipeline
 
@@ -57,3 +73,12 @@ jobs:
     - name: Shared - Test
       run: npm run test --if-present
       working-directory: shared
+
+    - name: Trigger deployment workflow
+      if: github.ref == 'refs/heads/main' # Only deploy on main branch
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: Deployment
+        # On credentials issues: Remember that the token will be invalidated after a specific time period
+        token: ${{ secrets.PAT }}
+        inputs: '{"origin_run_id" : "${{ github.run_id }}"}'
