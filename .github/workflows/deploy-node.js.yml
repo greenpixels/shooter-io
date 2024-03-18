@@ -18,6 +18,7 @@ jobs:
         name: client
         run-id: ${{ inputs.origin_run_id }}
         github-token: ${{ secrets.PAT }} 
+        path: client
 
     - name: Download client artifact
       uses: actions/download-artifact@v4
@@ -25,6 +26,7 @@ jobs:
         name: server
         run-id: ${{ inputs.origin_run_id }}
         github-token: ${{ secrets.PAT }} 
+        path: server
 
     - name: Output folder structure
       run: ls -R -a
