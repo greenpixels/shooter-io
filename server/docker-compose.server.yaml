@@ -11,3 +11,7 @@ services:
     - ./server:/app
     working_dir: /app
     command: ["node", "index.js"]
+
+networks:
+  shooter_io_server_network:
+    name: shooter_io_server_network

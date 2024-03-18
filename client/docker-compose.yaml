@@ -9,3 +9,7 @@ services:
     - '80:80'
     volumes:
     - ./dist:/usr/local/apache2/htdocs
+
+networks:
+  shooter_io_client_network:
+    name: shooter_io_client_network
