@@ -39,10 +39,10 @@ jobs:
       working-directory: server
 
     - name: Store server artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: server
-          path: server/dist
+      uses: actions/upload-artifact@v4
+      with:
+        name: server
+        path: server/dist
 
     # Client Pipeline
 
@@ -59,10 +59,10 @@ jobs:
       working-directory: client
     
     - name: Store client artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: client
-          path: client/dist
+      uses: actions/upload-artifact@v4
+      with:
+        name: client
+        path: client/dist
 
     # Shared Pipeline
 
