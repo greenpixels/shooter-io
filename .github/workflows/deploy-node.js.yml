@@ -7,11 +7,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Download client and server artifacts
+    - name: Download client artifact
       uses: actions/download-artifact@v4
+      with:
+        name: client
+        run-id: ${{ github.event.workflow_run.id }}
+
+    - name: Download client artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: server
+        run-id: ${{ github.event.workflow_run.id }}
 
     - name: Output folder structure
-      run: ls -a
+      run: ls -R -a
 
     - name: Setup Private Key
       run: |
