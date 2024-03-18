@@ -12,7 +12,7 @@ jobs:
 
     - name: Setup Private Key
       run: |
-        echo "SSH_PRIVATE_KEY" > temp_key
+        echo "$SSH_PRIVATE_KEY" > temp_key
         chmod 600 temp_key
       env:
         SSH_PRIVATE_KEY: ${{secrets.DEPLOYMENT_PK}}
