@@ -1,5 +1,9 @@
 # shooter-io: Project Structure
 ---
+- [Overview](./ReadMe.md)
+- **Project Structure**
+- [Coding Guidelines](./CodingGuidelines.md)
+---
 ## Repository
 This project defines three npm workspaces[^1].
 

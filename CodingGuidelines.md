@@ -1,5 +1,9 @@
 # shooter-io: Coding Guidelines
 ---
+- [Overview](./ReadMe.md)
+- [Project Structure](./ProjectStructure.md)
+- **Coding Guidelines**
+---
 1. **Features or changes MUST be created in seperate feature branches**
     All changes need to go through the automated testing, linting and building lifecycle. Changes will only be merged when the GitHub pipeline succesfully completes. To create a new change or feature, create new branch from the latest main-branch.
 

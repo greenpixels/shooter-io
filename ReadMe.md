@@ -1,4 +1,8 @@
-# shooter-io: Documentation
+# shooter-io: Overview
+---
+- **Overview**
+- [Project Structure](./ProjectStructure.md)
+- [Coding Guidelines](./CodingGuidelines.md)
 ---
 ## Project Description
 `shooter-io` is a simple, competetive open-source HTML5 shooter-game.
