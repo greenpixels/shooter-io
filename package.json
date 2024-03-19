@@ -5,9 +5,6 @@
     "server",
     "shared"
   ],
-  "scripts": {
-    "dev": "npm run start -w @shooter-io/server"
-  },
   "version": "0.0.1",
   "private": true,
   "license": "ISC",
