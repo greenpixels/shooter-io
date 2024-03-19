@@ -2,7 +2,7 @@
   "name": "@shooter-io/server",
   "scripts": {
     "build": "tsc && esbuild tsc_output/server/src/index.js --platform=node --bundle --minify --outfile=dist/index.js",
-    "start": "ts-node src/index.ts",
+    "dev": "ts-node src/index.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
