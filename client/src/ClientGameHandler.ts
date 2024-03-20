@@ -22,6 +22,7 @@ export class ClientGameHandler extends GameEventHandler {
         super()
         this.game = props.game
         this.socket = props.socket
+        
         this.socket.on(this.EVENT_GAME_TICK, this.gameTick.bind(this))
         this.socket.on(this.EVENT_PLAYER_SPAWN, this.playerSpawn.bind(this))
         this.socket.on(this.EVENT_PLAYER_DEATH, this.playerDeath.bind(this))
@@ -45,18 +46,19 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     gameTick(visiblePlayers: { [key: string]: PlayerDTO; }, visibleProjectiles: { [key: string]: ProjectileDTO; }): void {
-        Object.entries(visiblePlayers).forEach(([id, player]) => {
+        Object.entries(visiblePlayers).forEach(([id, playerDto]) => {
             if(this.players[id] !== undefined) {
-                this.players[id].sync(player);
+                this.players[id].sync(playerDto);
             } else {
-                this.addPlayer(id, visiblePlayers[id])
+                this.playerSpawn({playerDto})
             }
-          
         })
 
-        Object.entries(visibleProjectiles).forEach(([id, projectile]) => {
+        Object.entries(visibleProjectiles).forEach(([id, projectileDto]) => {
             if(this.projectiles[id] !== undefined) {
-                this.projectiles[id].sync(projectile);
+                this.projectiles[id].sync(projectileDto);
+            } else {
+                this.addProjectile(id, visibleProjectiles[id])
             }
         })
     }
@@ -82,11 +84,10 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     playerLeave(affectedPlayers: { [key: string]: PlayerDTO; }): void {
-        console.log("Trying to remove player")
         Object.keys(affectedPlayers).forEach((id) =>  {
             if(this.players[id] !== undefined) {
                 // A player left the game
-                console.log("A player was removed")
+                console.log("A player has left the game")
                 this.removePlayer(id)
               }
           })
@@ -99,13 +100,26 @@ export class ClientGameHandler extends GameEventHandler {
         this.players = {...this.players, ...{[id]: newPlayer}}
     }
 
+    addProjectile(id: string, dto: ProjectileDTO) {
+        const projectileSprite = PIXI.Sprite.from('https://pixijs.com/assets/bunny.png')
+        this.game.stage.addChild(projectileSprite)
+        const newProjectile = new Projectile(projectileSprite, dto)
+        this.projectiles = {...this.projectiles, ...{[id]: newProjectile}}
+    }
+
     removePlayer(id: string) {
         this.game.stage.removeChild(this.players[id].sprite)
         delete this.players[id]
     }
 
-    projectileSpawn(...args: Array<unknown>): void {
-        throw new Error("Method not implemented." + args[0]);
+    projectileSpawn(affectedProjectiles : {[key : string] : ProjectileDTO}): void {
+        Object.keys(affectedProjectiles).forEach((id)=>  {
+            if(this.projectiles[id] === undefined) {
+               this.addProjectile(id, affectedProjectiles[id])
+              } else {
+                console.warn("A projectile has been spawned whos ID already exists on the client. This is extremely unlikely. If this warning shows up often, there is need to debug.")
+              }
+          })
     }
     projectileDestroy(...args: Array<unknown>): void {
         throw new Error("Method not implemented." + args[0]);
