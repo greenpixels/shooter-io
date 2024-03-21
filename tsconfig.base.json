@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-
+      "types": ["vitest/globals"],
       "useDefineForClassFields": true,
       
       "skipLibCheck": true,
