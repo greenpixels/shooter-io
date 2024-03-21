@@ -3,11 +3,11 @@ import { Socket } from "socket.io-client";
 import * as PIXI from 'pixi.js'
 import { Player } from "./types/Player";
 import { Projectile } from "./types/Projectile";
-import { MOVE_DIRECTION } from "@shared/enums/MoveDirection";
 import { PlayerDTO } from "@shared/dtos/PlayerDTO";
 import { ProjectileDTO } from "@shared/dtos/ProjectileDTO";
+import { Vector2DTO } from "@shared/dtos/Vector2DTO";
 
-type ClientGameHandlerProps = {
+export type ClientGameHandlerProps = {
     socket : Socket,
     game : PIXI.Application<HTMLCanvasElement>
 }
@@ -17,6 +17,7 @@ export class ClientGameHandler extends GameEventHandler {
     private socket : Socket
     private players : {[key : string] : Player} = {}
     private projectiles : {[key : string] : Projectile} = {}
+    private moveVector : Vector2DTO = {x: 0, y: 0} 
 
     constructor(props : ClientGameHandlerProps) {
         super()
@@ -30,19 +31,39 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     handleInput(ev: KeyboardEvent, isKeyDown: boolean) {
-        if(ev.repeat || !this.socket.id) {
-            return
-        }
+        const lastMoveVector = {...this.moveVector}
+        const downOffset = Math.sign(Number(isKeyDown) - 0.5)
+        const amount = downOffset
+
         switch(ev.code) {
             case "KeyS":
-            case "ArrowDown": this.playerMove(this.socket.id, MOVE_DIRECTION.DOWN, isKeyDown); break;
+            case "ArrowDown":
+                this.moveVector.y += amount; break;
+
             case "KeyW":
-            case "ArrowUp": this.playerMove(this.socket.id, MOVE_DIRECTION.UP, isKeyDown); break;
+            case "ArrowUp":
+                this.moveVector.y -= amount; break;
+
             case "KeyA":
-            case "ArrowLeft": this.playerMove(this.socket.id, MOVE_DIRECTION.LEFT, isKeyDown); break;
+            case "ArrowLeft":  
+                this.moveVector.x -= amount; break;
+                
             case "KeyD":
-            case "ArrowRight": this.playerMove(this.socket.id, MOVE_DIRECTION.RIGHT, isKeyDown); break;
+            case "ArrowRight": 
+                this.moveVector.x += amount; break;
           }
+
+          if(Math.abs(this.moveVector.x) > 1) {
+            this.moveVector.x = Math.sign(this.moveVector.x);
+          }
+          if(Math.abs(this.moveVector.y) > 1) {
+            this.moveVector.y = Math.sign(this.moveVector.y);
+          }
+
+          if(ev.repeat || !this.socket.id || (lastMoveVector.x === this.moveVector.x && lastMoveVector.y === this.moveVector.y)) {
+            return
+        }
+          this.playerMove(this.socket.id, this.moveVector)
     }
 
     gameTick(visiblePlayers: { [key: string]: PlayerDTO; }, visibleProjectiles: { [key: string]: ProjectileDTO; }): void {
@@ -63,8 +84,8 @@ export class ClientGameHandler extends GameEventHandler {
         })
     }
 
-    playerMove(socketId: string, direction: MOVE_DIRECTION, isKeyDown: boolean): void {
-        this.socket.emit(this.EVENT_PLAYER_MOVE, socketId, direction, isKeyDown)
+    playerMove(socketId: string, moveVector: Vector2DTO): void {
+        this.socket.emit(this.EVENT_PLAYER_MOVE, socketId, moveVector)
     }
 
     playerDeath(...args: Array<unknown>): void {

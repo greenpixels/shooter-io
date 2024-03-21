@@ -1,9 +1,11 @@
 import { GameEventHandler } from "../../shared/GameEventHandler";
-import { MOVE_DIRECTION } from "../../shared/enums/MoveDirection";
 import { Server, Socket } from "socket.io";
 import { PlayerDTO } from "../../shared/dtos/PlayerDTO";
-import { Player } from "./types/Player";
+import { Player } from "./classes/Player";
 import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { Vector2DTO } from "../../shared/dtos/Vector2DTO";
+import { Vector2 } from "../../shared/classes/Vector2";
+import { lengthdirX, lengthdirY } from "../../shared/helpers/trigonometry";
 
 export class ServerGameHandler extends GameEventHandler {
     private server : Server
@@ -33,18 +35,28 @@ export class ServerGameHandler extends GameEventHandler {
 
     // @ts-expect-error  @typescript-eslint/no-unused-vars As of now we are not  using projectiles, so the argument is still unused
     gameTick(visiblePlayers: { [key: string]: Player; }, visibleProjectiles: { [key: string]: Projectile; }): void {     //  eslint-disable-line  @typescript-eslint/no-unused-vars 
-        
-        // TODO: We need to find a way to quickly convert the stored players to DTOs in order to send them over. This just ain't it.
-        // We should re-think the dto-architecture all together
         const playerDtoMap : { [key: string]: PlayerDTO; } = {}
+        const baseSpeed = 1.5
+
         Object.keys(visiblePlayers).forEach((id) => {
             const original = visiblePlayers[id]
-            original.position.x += original.velocity.x
-            original.position.y += original.velocity.y
+            if(Math.abs(original.velocity.x) + Math.abs(original.velocity.y) > 0) {
+                const angle = new Vector2(original.velocity).angle()
+                original.position.x += lengthdirX(baseSpeed, angle)
+                original.position.y += lengthdirY(baseSpeed, angle)
+            }
             playerDtoMap[id] = {id: original.id, position: original.position}
+
         })
+
         this.server.emit(this.EVENT_GAME_TICK, playerDtoMap, {})
     }
+    playerMove(socketId: string, moveVectorDTO: Vector2DTO): void {
+        const player = this.players[socketId];
+        player.velocity.x += Math.sign(moveVectorDTO.x)
+        player.velocity.y += Math.sign(moveVectorDTO.y)
+    }
+
     playerDeath(affectedPlayers: { [key: string]: PlayerDTO; }): void {
         throw new Error("Method not implemented." + affectedPlayers);
     }
@@ -62,21 +74,5 @@ export class ServerGameHandler extends GameEventHandler {
     projectileDestroy(...args: Array<unknown>): void {
         throw new Error("Method not implemented." + args);
     }
-    playerMove(socketId: string, direction: MOVE_DIRECTION, isKeyDown: boolean): void {
-        const factor = isKeyDown ? 1 : -1
-        switch(direction) {
-            case MOVE_DIRECTION.DOWN:
-                this.players[socketId].velocity.y += 1 * factor; break;
-            case MOVE_DIRECTION.UP:
-                this.players[socketId].velocity.y += -1 * factor; break;
-            case MOVE_DIRECTION.RIGHT:
-                this.players[socketId].velocity.x += 1 * factor; break;
-            case MOVE_DIRECTION.LEFT:
-                this.players[socketId].velocity.x += -1 * factor; break;
-        }
-        // Clamp values
-        this.players[socketId].velocity.x = Math.sign(this.players[socketId].velocity.x)
-        this.players[socketId].velocity.y= Math.sign(this.players[socketId].velocity.y)
-        // TODO: Calculating movement this way will cause diagonals to be faster.
-    }
+    
 }

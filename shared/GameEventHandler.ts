@@ -1,6 +1,6 @@
-import { MOVE_DIRECTION } from "./enums/MoveDirection";
 import { ProjectileDTO } from "./dtos/ProjectileDTO";
 import { PlayerDTO } from "./dtos/PlayerDTO";
+import { Vector2DTO } from "./dtos/Vector2DTO";
 
 
 export abstract class GameEventHandler {
@@ -23,5 +23,5 @@ export abstract class GameEventHandler {
     abstract projectileDestroy(...args : Array<unknown>) : void
 
     EVENT_PLAYER_MOVE = "player_move_event"
-    abstract playerMove(socketId: string, direction: MOVE_DIRECTION, isKeyDown: boolean) : void
+    abstract playerMove(socketId: string, moveVector: Vector2DTO) : void
 }
