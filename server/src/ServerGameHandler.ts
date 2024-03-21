@@ -53,8 +53,8 @@ export class ServerGameHandler extends GameEventHandler {
     }
     playerMove(socketId: string, moveVectorDTO: Vector2DTO): void {
         const player = this.players[socketId];
-        player.velocity.x += Math.sign(moveVectorDTO.x)
-        player.velocity.y += Math.sign(moveVectorDTO.y)
+        player.velocity.x = Math.sign(moveVectorDTO.x)
+        player.velocity.y = Math.sign(moveVectorDTO.y)
     }
 
     playerDeath(affectedPlayers: { [key: string]: PlayerDTO; }): void {
