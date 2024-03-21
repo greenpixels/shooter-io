@@ -1,9 +1,6 @@
 {
     "include": ["src/**/*", "../shared/**/*"],
     "compilerOptions": {
-      "paths": {
-        "@shared/*": ["../shared/*"]
-      },
       "outDir": "tsc_output",
       "moduleResolution": "node",
       "module": "CommonJS",
