@@ -1,10 +1,13 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import * as path from "path"
 
 export default defineConfig({
-  plugins: [
-    react()],
+  test: {
+    globals: true,
+    setupFiles: ["./setupFilesAfterEnv.ts"]
+  },
+  plugins: [react()],
   define: {
     APP_VERSION: JSON.stringify(process.env.npm_package_version),
   },
