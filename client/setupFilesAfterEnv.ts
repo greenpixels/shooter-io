@@ -1,6 +1,31 @@
 import { vi } from "vitest"
 
 // If we don't create empty mocks here, pixi js tries to specify and create a worker on import
-vi.mock("pixi.js", () => {
-    return {}
+const mockSprite = {
+    position: {x: 0, y: 0},
+    texture : {
+        baseTexture: {
+            scaleMode: undefined
+        }
+    },
+    anchor: {
+        set: vi.fn()
+    },
+    scale: {
+        x: 0,
+        y: 0
+    }
+}
+
+vi.mock("pixi.js",  () => {
+    return {
+        Sprite: {
+            from: () => {
+                return mockSprite
+            },
+        },
+        SCALE_MODES: {
+            NEAREST: "nearest"
+        }
+    }
 })

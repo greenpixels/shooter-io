@@ -1,4 +1,4 @@
-import {Vector2DTO} from "@shared/dtos/Vector2DTO";
+import { Vector2DTO } from "../dtos/Vector2DTO";
 
 export class Vector2 implements Vector2DTO {
     private _x: number;
@@ -67,6 +67,10 @@ export class Vector2 implements Vector2DTO {
 
     public equals(vector: Vector2DTO): boolean {
         return this._x === vector.x && this._y === vector.y;
+    }
+
+    public angle(): number {
+        return (Math.atan2(this._y, this._x) * 180) / Math.PI
     }
 
     public dto(): Vector2DTO {

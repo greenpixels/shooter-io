@@ -1,0 +1,10 @@
+canvas {
+  /* Firefox */
+  image-rendering: crisp-edges;
+  /* Chromium + Safari */
+  image-rendering: pixelated;
+}
+
+.canvas-container:hover {
+    cursor: url("./assets/spr_cursor.png") 32 32, auto
+}

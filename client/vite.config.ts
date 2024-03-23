@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import * as path from "path"
 
 export default defineConfig({
+  assetsInclude: ["src/assets/**/*.png"],
   test: {
     globals: true,
     setupFiles: ["./setupFilesAfterEnv.ts"]
