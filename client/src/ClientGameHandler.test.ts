@@ -1,5 +1,5 @@
 
-import { Application, Sprite } from "pixi.js";
+import { Application } from "pixi.js";
 import { ClientGameHandler } from "./ClientGameHandler"
 import { Socket } from "socket.io-client";
 import { PlayerDTO } from "@shared/dtos/PlayerDTO";
@@ -12,11 +12,10 @@ describe("Testing ClientGameHandler Input Handling", () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
         client.playerMove = playerMoveMock;
-        client.handleInput({ code: "ArrowDown", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "ArrowDown", repeat: false } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(1, MOCK_SOCKET_CLIENT_ID, { x: 0, y: 1 })
-        // @ts-expect-error we don't care about private access when mocking
         client.moveVector = { x: 0, y: 0 }
-        client.handleInput({ code: "KeyS", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "KeyS", repeat: false } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(2, MOCK_SOCKET_CLIENT_ID, { x: 0, y: 1 })
     })
 
@@ -24,11 +23,10 @@ describe("Testing ClientGameHandler Input Handling", () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
         client.playerMove = playerMoveMock;
-        client.handleInput({ code: "ArrowUp", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "ArrowUp", repeat: false } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(1, MOCK_SOCKET_CLIENT_ID, { x: 0, y: -1 })
-        // @ts-expect-error we don't care about private access when mocking
         client.moveVector = { x: 0, y: 0 }
-        client.handleInput({ code: "KeyW", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "KeyW", repeat: false } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(2, MOCK_SOCKET_CLIENT_ID, { x: 0, y: -1 })
     })
 
@@ -36,11 +34,10 @@ describe("Testing ClientGameHandler Input Handling", () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
         client.playerMove = playerMoveMock;
-        client.handleInput({ code: "ArrowLeft", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "ArrowLeft", repeat: false } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(1, MOCK_SOCKET_CLIENT_ID, { x: -1, y: 0 })
-        // @ts-expect-error we don't care about private access when mocking
         client.moveVector = { x: 0, y: 0 }
-        client.handleInput({ code: "KeyA", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "KeyA", repeat: false } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(2, MOCK_SOCKET_CLIENT_ID, { x: -1, y: 0 })
     })
 
@@ -48,18 +45,17 @@ describe("Testing ClientGameHandler Input Handling", () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
         client.playerMove = playerMoveMock;
-        client.handleInput({ code: "ArrowRight", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "ArrowRight", repeat: false } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(1, MOCK_SOCKET_CLIENT_ID, { x: 1, y: 0 })
-        // @ts-expect-error we don't care about private access when mocking
         client.moveVector = { x: 0, y: 0 }
-        client.handleInput({ code: "KeyD", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "KeyD", repeat: false } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(2, MOCK_SOCKET_CLIENT_ID, { x: 1, y: 0 })
     })
 })
 
 describe("Testing ClientGameHandler Socket Events", () => {
     test("Game tick with non-existent player should trigger the add Player logic", () => {
-        const mockPlayerDto: PlayerDTO = { id: "some_player_id", position: { x: 0, y: 0 } }
+        const mockPlayerDto: PlayerDTO = { id: "some_player_id", position: { x: 0, y: 0 }, aimDirection: {x: 0, y: 0}  }
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID);
         const addPlayerMock = vi.fn()
         client.addPlayer = addPlayerMock
@@ -78,12 +74,11 @@ describe("Testing ClientGameHandler Socket Events", () => {
 
     test("Game tick with existent player should trigger the remove player logic", () => {
         const playerId = "some_id"
-        const mockPlayerDto: PlayerDTO = { id: playerId, position: { x: 0, y: 0 } }
+        const mockPlayerDto: PlayerDTO = { id: playerId, position: { x: 0, y: 0 }, aimDirection: {x: 0, y: 0} }
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID);
         const removePlayerMock = vi.fn()
         client.removePlayer = removePlayerMock
-        const player = new Player({ position: { _x: 0, _y: 0 } } as Sprite, mockPlayerDto)
-        // @ts-expect-error we don't care about private access when mocking
+        const player = new Player(client.game.stage, mockPlayerDto)
         client.players = { [playerId]: player }
         client.playerLeave({ [playerId]: mockPlayerDto })
         expect(removePlayerMock).toHaveBeenCalledTimes(1)
@@ -91,11 +86,10 @@ describe("Testing ClientGameHandler Socket Events", () => {
 
     test("Game tick with non-existent player should NOT trigger the remove player logic", () => {
         const playerId = "some_id"
-        const mockPlayerDto: PlayerDTO = { id: playerId, position: { x: 0, y: 0 } }
+        const mockPlayerDto: PlayerDTO = { id: playerId, position: { x: 0, y: 0 }, aimDirection: {x: 0, y: 0}  }
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID);
         const removePlayerMock = vi.fn()
         client.removePlayer = removePlayerMock
-        // @ts-expect-error we don't care about private access when mocking
         client.players = {}
         client.playerLeave({ [playerId]: mockPlayerDto })
         expect(removePlayerMock).toHaveBeenCalledTimes(0)
@@ -107,5 +101,13 @@ function createMockedClient(socketId: string) {
         on: () => { },
         id: socketId
     }
-    return new ClientGameHandler({ game: {} as unknown as Application<HTMLCanvasElement>, socket: socketMock as unknown as Socket });
+    return new ClientGameHandler({ game: {
+        stage: {
+            sortChildren: vi.fn(),
+            addChild: () => {}
+        },
+        
+    } as unknown as Application<HTMLCanvasElement>,
+    socket: socketMock as unknown as Socket,
+    canvasSize: {x: 1280, y: 720} });
 }
