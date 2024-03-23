@@ -10,6 +10,10 @@ const mockSprite = {
     },
     anchor: {
         set: vi.fn()
+    },
+    scale: {
+        x: 0,
+        y: 0
     }
 }
 
