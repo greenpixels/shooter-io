@@ -21,14 +21,15 @@ export class ServerGameHandler extends GameEventHandler {
         console.log(`A player with the socket ID ${socket.id} has connected!`)
         const newPlayer = new Player(socket, {x: 50, y: 50})
         this.players[socket.id] = newPlayer
-        this.playerSpawn({[socket.id] : {id: socket.id, position: newPlayer.position}})
+        this.playerSpawn({[socket.id] : {id: socket.id, position: newPlayer.position, aimDirection: newPlayer.aimDirection}})
         socket.on(this.EVENT_PLAYER_MOVE, this.playerMove.bind(this))
+        socket.on(this.EVENT_PLAYER_AIM, this.playerAim.bind(this))
     }
 
     removePlayer(socket: Socket) {
         console.log(`A player with the socket ID ${socket.id} has disconnected!`)
         if(this.players[socket.id] !== undefined) {
-            this.playerLeave({[socket.id] : {id: socket.id, position: this.players[socket.id].position}})
+            this.playerLeave({[socket.id] : {id: socket.id, position: this.players[socket.id].position, aimDirection: this.players[socket.id].aimDirection}})
             delete this.players[socket.id] 
         }
     }
@@ -45,7 +46,7 @@ export class ServerGameHandler extends GameEventHandler {
                 original.position.x += lengthdirX(baseSpeed, angle)
                 original.position.y += lengthdirY(baseSpeed, angle)
             }
-            playerDtoMap[id] = {id: original.id, position: original.position}
+            playerDtoMap[id] = {id: original.id, position: original.position, aimDirection: original.aimDirection}
 
         })
 
@@ -55,6 +56,11 @@ export class ServerGameHandler extends GameEventHandler {
         const player = this.players[socketId];
         player.velocity.x = Math.sign(moveVectorDTO.x)
         player.velocity.y = Math.sign(moveVectorDTO.y)
+    }
+
+    playerAim(socketId: string, aimVector: Vector2DTO): void {
+        const player = this.players[socketId];
+        player.aimDirection = aimVector
     }
 
     playerDeath(affectedPlayers: { [key: string]: PlayerDTO; }): void {

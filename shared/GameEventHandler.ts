@@ -24,4 +24,7 @@ export abstract class GameEventHandler {
 
     EVENT_PLAYER_MOVE = "player_move_event"
     abstract playerMove(socketId: string, moveVector: Vector2DTO) : void
+
+    EVENT_PLAYER_AIM = "player_aim_event"
+    abstract playerAim(socketId: string, aimVector: Vector2DTO) : void
 }

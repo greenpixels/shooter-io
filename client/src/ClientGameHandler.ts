@@ -9,28 +9,46 @@ import { Vector2DTO } from "@shared/dtos/Vector2DTO";
 
 export type ClientGameHandlerProps = {
     socket : Socket,
-    game : PIXI.Application<HTMLCanvasElement>
+    game : PIXI.Application<HTMLCanvasElement>,
+    canvasSize: Vector2DTO
 }
 
 export class ClientGameHandler extends GameEventHandler {
-    private game : PIXI.Application<HTMLCanvasElement>
-    private socket : Socket
-    private players : {[key : string] : Player} = {}
-    private projectiles : {[key : string] : Projectile} = {}
-    private moveVector : Vector2DTO = {x: 0, y: 0} 
+    game : PIXI.Application<HTMLCanvasElement>
+    socket : Socket
+    players : {[key : string] : Player} = {}
+    projectiles : {[key : string] : Projectile} = {}
+    moveVector : Vector2DTO = {x: 0, y: 0} 
+    canvasSize : Vector2DTO = {x: 0, y: 0}
 
     constructor(props : ClientGameHandlerProps) {
         super()
         this.game = props.game
         this.socket = props.socket
-        
+        this.canvasSize = props.canvasSize;
         this.socket.on(this.EVENT_GAME_TICK, this.gameTick.bind(this))
         this.socket.on(this.EVENT_PLAYER_SPAWN, this.playerSpawn.bind(this))
         this.socket.on(this.EVENT_PLAYER_DEATH, this.playerDeath.bind(this))
         this.socket.on(this.EVENT_PLAYER_LEAVE, this.playerLeave.bind(this))
     }
 
-    handleInput(ev: KeyboardEvent, isKeyDown: boolean) {
+    handleMouseMoveInput(ev: MouseEvent) {
+        if(!this.socket.id) return;
+        const clampValue = 2000
+        const centeredX = Math.max(-clampValue, Math.min(clampValue, ev.x - this.canvasSize.x/2))
+        const centeredY = Math.max(-clampValue, Math.min(clampValue, ev.y - this.canvasSize.y/2))
+        let normalizedMX = centeredX/clampValue
+        if(Math.abs(normalizedMX) > 1) {
+            normalizedMX = Math.sign(normalizedMX)
+        }
+        let normalizedMY = centeredY/clampValue;
+        if(Math.abs(normalizedMY) > 1) {
+            normalizedMY = Math.sign(normalizedMY)
+        }
+        this.playerAim(this.socket.id, {x: normalizedMX,  y: normalizedMY})
+    }
+
+    handleKeyboardInput(ev: KeyboardEvent, isKeyDown: boolean) {
         const lastMoveVector = {...this.moveVector}
         const downOffset = Math.sign(Number(isKeyDown) - 0.5)
         const amount = downOffset
@@ -59,7 +77,6 @@ export class ClientGameHandler extends GameEventHandler {
           if(Math.abs(this.moveVector.y) > 1) {
             this.moveVector.y = Math.sign(this.moveVector.y);
           }
-
           if(ev.repeat || !this.socket.id || (lastMoveVector.x === this.moveVector.x && lastMoveVector.y === this.moveVector.y)) {
             return
         }
@@ -67,11 +84,15 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     gameTick(visiblePlayers: { [key: string]: PlayerDTO; }, visibleProjectiles: { [key: string]: ProjectileDTO; }): void {
+        
+        if(!this.socket.id) {
+            return
+        }
         Object.entries(visiblePlayers).forEach(([id, playerDto]) => {
             if(this.players[id] !== undefined) {
                 this.players[id].sync(playerDto);
             } else {
-                this.playerSpawn({playerDto})
+                this.playerSpawn({[playerDto.id]: playerDto})
             }
         })
 
@@ -82,10 +103,24 @@ export class ClientGameHandler extends GameEventHandler {
                 this.addProjectile(id, visibleProjectiles[id])
             }
         })
+        
+        const currentPlayer = this.players[this.socket.id]
+        if(currentPlayer) {
+            this.game.stage.pivot.set(
+                (currentPlayer.position.x + currentPlayer.sprite.width/2) - this.game.screen.width/2,
+                (currentPlayer.position.y + currentPlayer.sprite.height/2)  - this.game.screen.height/2
+                )
+        }
+        
+        this.game.stage.sortChildren()
     }
 
     playerMove(socketId: string, moveVector: Vector2DTO): void {
         this.socket.emit(this.EVENT_PLAYER_MOVE, socketId, moveVector)
+    }
+
+    playerAim(socketId: string, aimVector: Vector2DTO): void {
+        this.socket.emit(this.EVENT_PLAYER_AIM, socketId, aimVector)
     }
 
     playerDeath(...args: Array<unknown>): void {
@@ -115,21 +150,17 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     addPlayer(id: string, dto: PlayerDTO) {
-        const playerSprite = PIXI.Sprite.from('https://pixijs.com/assets/bunny.png')
-        this.game.stage.addChild(playerSprite)
-        const newPlayer = new Player(playerSprite, dto)
-        this.players = {...this.players, ...{[id]: newPlayer}}
+        this.players = {...this.players, ...{[id]: new Player(this.game.stage, dto)}}
     }
 
     addProjectile(id: string, dto: ProjectileDTO) {
         const projectileSprite = PIXI.Sprite.from('https://pixijs.com/assets/bunny.png')
-        this.game.stage.addChild(projectileSprite)
         const newProjectile = new Projectile(projectileSprite, dto)
         this.projectiles = {...this.projectiles, ...{[id]: newProjectile}}
     }
 
     removePlayer(id: string) {
-        this.game.stage.removeChild(this.players[id].sprite)
+        this.players[id].cleanup(this.game.stage)
         delete this.players[id]
     }
 
@@ -145,6 +176,4 @@ export class ClientGameHandler extends GameEventHandler {
     projectileDestroy(...args: Array<unknown>): void {
         throw new Error("Method not implemented." + args[0]);
     }
-
-    
 }
