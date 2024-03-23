@@ -7,6 +7,7 @@ export class Player implements PlayerDTO {
     id: string;
     position: Vector2DTO;
     velocity: Vector2DTO = {x: 0, y: 0}
+    aimDirection: Vector2DTO = {x: 0, y: 0}
 
     constructor(socket : Socket, position: Vector2DTO) {
         this.socket = socket
