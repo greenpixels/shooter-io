@@ -30,6 +30,9 @@ export class ClientGameHandler extends GameEventHandler {
         this.socket.on(this.EVENT_PLAYER_SPAWN, this.playerSpawn.bind(this))
         this.socket.on(this.EVENT_PLAYER_DEATH, this.playerDeath.bind(this))
         this.socket.on(this.EVENT_PLAYER_LEAVE, this.playerLeave.bind(this))
+
+        this.socket.on(this.EVENT_PROJECTILE_SPAWN, this.projectileSpawn.bind(this))
+        this.socket.on(this.EVENT_PROJECTILE_DESTROY, this.projectileDestroy.bind(this))
     }
 
     handleMouseMoveInput(ev: MouseEvent) {
@@ -83,8 +86,17 @@ export class ClientGameHandler extends GameEventHandler {
           this.playerMove(this.socket.id, this.moveVector)
     }
 
+    handleMouseClickInput(ev: MouseEvent): any {
+        if(!this.socket.id) return
+        ev.preventDefault();
+        this.playerShoot(this.socket.id)
+    }
+
+    playerShoot(socketId: string): void {
+        this.socket.emit(this.EVENT_PLAYER_SHOOT, socketId)
+    }
+
     gameTick(visiblePlayers: { [key: string]: PlayerDTO; }, visibleProjectiles: { [key: string]: ProjectileDTO; }): void {
-        
         if(!this.socket.id) {
             return
         }
@@ -143,7 +155,6 @@ export class ClientGameHandler extends GameEventHandler {
         Object.keys(affectedPlayers).forEach((id) =>  {
             if(this.players[id] !== undefined) {
                 // A player left the game
-                console.log("A player has left the game")
                 this.removePlayer(id)
               }
           })
@@ -154,8 +165,7 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     addProjectile(id: string, dto: ProjectileDTO) {
-        const projectileSprite = PIXI.Sprite.from('https://pixijs.com/assets/bunny.png')
-        const newProjectile = new Projectile(projectileSprite, dto)
+        const newProjectile = new Projectile(this.game.stage, dto)
         this.projectiles = {...this.projectiles, ...{[id]: newProjectile}}
     }
 
@@ -165,15 +175,19 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     projectileSpawn(affectedProjectiles : {[key : string] : ProjectileDTO}): void {
-        Object.keys(affectedProjectiles).forEach((id)=>  {
+        Object.keys(affectedProjectiles).forEach((id) =>  {
             if(this.projectiles[id] === undefined) {
-               this.addProjectile(id, affectedProjectiles[id])
-              } else {
-                console.warn("A projectile has been spawned whos ID already exists on the client. This is extremely unlikely. If this warning shows up often, there is need to debug.")
+                this.addProjectile(id, affectedProjectiles[id])
               }
           })
     }
-    projectileDestroy(...args: Array<unknown>): void {
-        throw new Error("Method not implemented." + args[0]);
+
+    projectileDestroy(affectedProjectiles : {[key : string] : ProjectileDTO}): void {
+        Object.keys(affectedProjectiles).forEach((id) =>  {
+            if(this.projectiles[id] !== undefined) {
+                this.projectiles[id].cleanup(this.game.stage)
+                delete this.projectiles[id]
+              }
+          })
     }
 }

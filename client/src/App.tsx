@@ -18,7 +18,6 @@ function App(props: { socket: Socket }) {
   useEffect(() => {
     const viewRef = gameViewRef.current
     const handleTabClose = () => {
-      console.log("Disconnecting")
       props.socket.disconnect()
     };
     if (game === null && viewRef) {
@@ -31,6 +30,7 @@ function App(props: { socket: Socket }) {
       
       document.addEventListener("keydown", (ev) => eventHandler.handleKeyboardInput(ev, true))
       document.addEventListener("keyup", (ev) => eventHandler.handleKeyboardInput(ev, false))
+      viewRef.addEventListener("click", (ev) => eventHandler.handleMouseClickInput(ev))
       viewRef.addEventListener("mousemove", (ev) => eventHandler.handleMouseMoveInput(ev))
       window.addEventListener('beforeunload', handleTabClose);
       setEventHandler(eventHandler)

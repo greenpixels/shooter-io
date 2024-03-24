@@ -10,7 +10,6 @@ export class Player extends Entity<PlayerDTO> {
     readonly gunSprite : Sprite = Sprite.from(SniperImage)
     aimDirection: Vector2DTO = {x: 0, y: 0};
     
-
     constructor(stage: Container<DisplayObject>, dto: PlayerDTO) {
         const playerSprite = Sprite.from(PlayerImage)
         playerSprite.anchor.set(0.5, 0.5)
@@ -45,7 +44,6 @@ export class Player extends Entity<PlayerDTO> {
     }
 
     public cleanup(stage: Container<DisplayObject>): void {
-        console.log("Trying to remove")
         stage.removeChild(this.sprite)
         stage.removeChild(this.gunSprite)
     }
