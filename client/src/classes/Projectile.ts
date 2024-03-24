@@ -1,7 +1,7 @@
 import { ProjectileDTO } from "@shared/dtos/ProjectileDTO.ts";
 import { Entity } from "./Entity";
 import { Container, DisplayObject, Sprite } from "pixi.js";
-import BulletImage from "@public/spr_bullet.png"
+import BulletImage from "@assets/spr_bullet.png"
 import { angleToRadians } from "@shared/helpers/trigonometry";
 import { Vector2 } from "@shared/classes/Vector2";
 
