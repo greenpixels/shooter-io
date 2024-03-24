@@ -20,11 +20,11 @@
 }
 
 .tabledata {
-    padding: 5px 16px
+    padding: 5px 16px;
 }
 
 .tablerow:nth-child(odd) {
-    background-color: rgba(0, 0, 0, 0.2)
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .modalbutton {
@@ -34,7 +34,7 @@
     border-radius: 0px;
     border: none;
     pointer-events: all;
-    color:white;
+    color: white;
     padding: 8px;
 }
 

@@ -1,6 +1,6 @@
-import { Vector2DTO } from "./Vector2DTO";
+import { Vector2DTO } from './Vector2DTO'
 
 export interface EntityDTO {
-    id: string;
+    id: string
     position: Vector2DTO
 }

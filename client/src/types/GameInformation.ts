@@ -1,6 +1,6 @@
-import { PlayerDTO } from "@shared/dtos/PlayerDTO";
+import { PlayerDTO } from '@shared/dtos/PlayerDTO'
 
 export interface GameInformation {
-    players: Array<PlayerDTO>,
+    players: Array<PlayerDTO>
     ownId: string
 }

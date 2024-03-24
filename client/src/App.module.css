@@ -1,24 +1,26 @@
 canvas {
-  /* Firefox */
-  image-rendering: crisp-edges;
-  /* Chromium + Safari */
-  image-rendering: pixelated;
-  width: 100%;
-  
+    /* Firefox */
+    image-rendering: crisp-edges;
+    /* Chromium + Safari */
+    image-rendering: pixelated;
+    width: 100%;
 }
 
-html, body {
-  margin: 0;
-  overflow: hidden;
+html,
+body {
+    margin: 0;
+    overflow: hidden;
 }
 
 .container {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  max-height: 100vh;
-  background-color: teal;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    max-height: 100vh;
+    background-color: teal;
 }
 
 .container:hover {
-    cursor: url("./assets/spr_cursor.png") 32 32, auto;
+    cursor:
+        url('./assets/spr_cursor.png') 32 32,
+        auto;
 }

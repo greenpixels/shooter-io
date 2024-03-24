@@ -1,12 +1,12 @@
-import { PlayerDTO } from "../dtos/PlayerDTO"
-import { ProjectileDTO } from "../dtos/ProjectileDTO"
+import { PlayerDTO } from '../dtos/PlayerDTO'
+import { ProjectileDTO } from '../dtos/ProjectileDTO'
 
 export class DTOConverter {
     static toPlayerDTO(player: PlayerDTO) {
         return {
             aimDirection: player.aimDirection,
             id: player.id,
-            position: player.position
+            position: player.position,
         }
     }
 
@@ -14,9 +14,9 @@ export class DTOConverter {
         return {
             direction: projectile.direction,
             id: projectile.id,
-            position: projectile.position
+            position: projectile.position,
         }
     }
 }
 
-export default DTOConverter;
+export default DTOConverter
