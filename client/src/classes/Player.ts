@@ -4,8 +4,8 @@ import { Vector2DTO } from "@shared/dtos/Vector2DTO";
 import { Vector2 } from "@shared/classes/Vector2";
 import {angleToRadians, lengthdirX, lengthdirY} from "@shared/helpers/trigonometry"
 import { Container, DisplayObject, SCALE_MODES, Sprite } from "pixi.js";
-import SniperImage from "../assets/spr_sniper.png"
-import PlayerImage from "../assets/spr_human1.png"
+import SniperImage from "@public/spr_sniper.png"
+import PlayerImage from "@public/spr_human1.png"
 export class Player extends Entity<PlayerDTO> {
     readonly gunSprite : Sprite = Sprite.from(SniperImage)
     aimDirection: Vector2DTO = {x: 0, y: 0};

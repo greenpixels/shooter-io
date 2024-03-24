@@ -1,8 +1,8 @@
 import {GameEventHandler } from "@shared/GameEventHandler"
 import { Socket } from "socket.io-client";
 import * as PIXI from 'pixi.js'
-import { Player } from "./types/Player";
-import { Projectile } from "./types/Projectile";
+import { Player } from "./classes/Player";
+import { Projectile } from "./classes/Projectile";
 import { PlayerDTO } from "@shared/dtos/PlayerDTO";
 import { ProjectileDTO } from "@shared/dtos/ProjectileDTO";
 import { Vector2DTO } from "@shared/dtos/Vector2DTO";
