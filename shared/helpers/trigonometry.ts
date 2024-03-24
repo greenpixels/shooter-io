@@ -1,6 +1,6 @@
 export function angleToRadians(angle: number) {
     let realAngle = angle % 360
-    if(Math.sign(realAngle) === -1) {
+    if (Math.sign(realAngle) === -1) {
         realAngle = realAngle + 360
     }
     return (realAngle / 180) * Math.PI

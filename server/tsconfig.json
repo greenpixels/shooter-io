@@ -1,10 +1,10 @@
 {
     "include": ["src/**/*", "../shared/**/*"],
     "compilerOptions": {
-      "outDir": "tsc_output",
-      "moduleResolution": "node",
-      "module": "CommonJS",
-      "target": "ESNext"
+        "outDir": "tsc_output",
+        "moduleResolution": "node",
+        "module": "CommonJS",
+        "target": "ESNext"
     },
-    "extends": "../tsconfig.base.json",
-  }
+    "extends": "../tsconfig.base.json"
+}

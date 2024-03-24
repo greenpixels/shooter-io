@@ -1,21 +1,21 @@
 {
     "compilerOptions": {
-      "lib": ["ES2020", "DOM", "DOM.Iterable"],
-      "paths": {
-        "@shared/*": ["../shared/*"]
-      },
+        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "paths": {
+            "@shared/*": ["../shared/*"],
+            "@assets/*": ["./src/assets/*"]
+        },
 
-      "target": "ESNext",
-      "module": "ESNext",
-      "moduleResolution": "bundler",
-      "allowImportingTsExtensions": true,
-      "resolveJsonModule": true,
-      "isolatedModules": true,
-      "noEmit": true,
-      "jsx": "react-jsx",
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react-jsx"
     },
     "include": ["src"],
     "extends": ["../tsconfig.base.json"],
     "references": [{ "path": "./tsconfig.node.json" }]
-  }
-  
+}
