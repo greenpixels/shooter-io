@@ -1,73 +1,69 @@
 name: Deployment
 
-on: 
-  workflow_dispatch:
-    inputs:
-      origin_run_id:
-        description: The ID of the workflow that triggered this workflow
-        required: true
+on:
+    workflow_dispatch:
+        inputs:
+            origin_run_id:
+                description: The ID of the workflow that triggered this workflow
+                required: true
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
+    deploy:
+        runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v2
 
-    - name: Download client artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: client
-        run-id: ${{ inputs.origin_run_id }}
-        github-token: ${{ secrets.PAT }} 
-        path: .artifacts/client
+            - name: Download client artifact
+              uses: actions/download-artifact@v4
+              with:
+                  name: client
+                  run-id: ${{ inputs.origin_run_id }}
+                  github-token: ${{ secrets.PAT }}
+                  path: .artifacts/client
 
-    - name: Download server artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: server
-        run-id: ${{ inputs.origin_run_id }}
-        github-token: ${{ secrets.PAT }} 
-        path: .artifacts/server
+            - name: Download server artifact
+              uses: actions/download-artifact@v4
+              with:
+                  name: server
+                  run-id: ${{ inputs.origin_run_id }}
+                  github-token: ${{ secrets.PAT }}
+                  path: .artifacts/server
 
-    - name: Output workspace
-      run: ls -a
+            - name: Output workspace
+              run: ls -a
 
-    - name: Setup Private Key
-      run: |
-        echo "${{secrets.DEPLOYMENT_PK}}" > temp_key
-        chmod 600 temp_key
+            - name: Setup Private Key
+              run: |
+                  echo "${{secrets.DEPLOYMENT_PK}}" > temp_key
+                  chmod 600 temp_key
 
-    # Server Deployment Start
-    - name: Deploy server artifact to production server
-      run: |
-        scp -o StrictHostKeyChecking=no -i temp_key -r .artifacts/server root@217.160.53.253:/data/stacks/shooter-io
+            # Server Deployment Start
+            - name: Deploy server artifact to production server
+              run: |
+                  scp -o StrictHostKeyChecking=no -i temp_key -r .artifacts/server root@217.160.53.253:/data/stacks/shooter-io
 
-    - name: Deploy server docker compose file to production server
-      run: |
-        scp -o StrictHostKeyChecking=no -i temp_key -r server/docker-compose.server.yaml root@217.160.53.253:/data/stacks/shooter-io
-      
-    - name: Restart Server Docker Service
-      run: |
-        ssh -o StrictHostKeyChecking=no -i temp_key root@217.160.53.253 "cd /data/stacks/shooter-io && docker compose -f docker-compose.server.yaml down && docker compose -f docker-compose.server.yaml up -d"
-    # Server Deployment End
+            - name: Deploy server docker compose file to production server
+              run: |
+                  scp -o StrictHostKeyChecking=no -i temp_key -r server/docker-compose.server.yaml root@217.160.53.253:/data/stacks/shooter-io
 
-    # Client Deployment Start
-    - name: Deploy client artifact to production server
-      run: |
-        scp -o StrictHostKeyChecking=no -i temp_key -r .artifacts/client root@217.160.53.253:/data/stacks/shooter-io
+            - name: Restart Server Docker Service
+              run: |
+                  ssh -o StrictHostKeyChecking=no -i temp_key root@217.160.53.253 "cd /data/stacks/shooter-io && docker compose -f docker-compose.server.yaml down && docker compose -f docker-compose.server.yaml up -d"
+            # Server Deployment End
+            # Client Deployment Start
+            - name: Deploy client artifact to production server
+              run: |
+                  scp -o StrictHostKeyChecking=no -i temp_key -r .artifacts/client root@217.160.53.253:/data/stacks/shooter-io
 
-    - name: Deploy client docker compose file to production server
-      run: |
-        scp -o StrictHostKeyChecking=no -i temp_key -r client/docker-compose.client.yaml root@217.160.53.253:/data/stacks/shooter-io
-    
-    - name: Restart Client Docker Service
-      run: |
-        ssh -o StrictHostKeyChecking=no -i temp_key root@217.160.53.253 "cd /data/stacks/shooter-io && docker compose -f docker-compose.client.yaml down && docker compose -f docker-compose.client.yaml up -d"
-    # Client Deployment End
+            - name: Deploy client docker compose file to production server
+              run: |
+                  scp -o StrictHostKeyChecking=no -i temp_key -r client/docker-compose.client.yaml root@217.160.53.253:/data/stacks/shooter-io
 
-    - name: Clean up temp files
-      run: rm temp_key
-
-    
+            - name: Restart Client Docker Service
+              run: |
+                  ssh -o StrictHostKeyChecking=no -i temp_key root@217.160.53.253 "cd /data/stacks/shooter-io && docker compose -f docker-compose.client.yaml down && docker compose -f docker-compose.client.yaml up -d"
+            # Client Deployment End
+            - name: Clean up temp files
+              run: rm temp_key
