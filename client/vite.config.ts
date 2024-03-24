@@ -23,7 +23,8 @@ export default defineConfig({
   },
   resolve: {
     alias: [
-      {find: "@shared", replacement: path.resolve(__dirname, "../shared")}
+      {find: "@shared", replacement: path.resolve(__dirname, "../shared")},
+      {find: "@public", replacement: path.resolve(__dirname, "./public")}
     ],
 },
 })
