@@ -12,10 +12,10 @@ describe("Testing ClientGameHandler Input Handling", () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
         client.playerMove = playerMoveMock;
-        client.handleKeyboardInput({ code: "ArrowDown", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "ArrowDown", repeat: false, preventDefault: () => {} } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(1, MOCK_SOCKET_CLIENT_ID, { x: 0, y: 1 })
         client.moveVector = { x: 0, y: 0 }
-        client.handleKeyboardInput({ code: "KeyS", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "KeyS", repeat: false, preventDefault: () => {} } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(2, MOCK_SOCKET_CLIENT_ID, { x: 0, y: 1 })
     })
 
@@ -23,10 +23,10 @@ describe("Testing ClientGameHandler Input Handling", () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
         client.playerMove = playerMoveMock;
-        client.handleKeyboardInput({ code: "ArrowUp", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "ArrowUp", repeat: false, preventDefault: () => {} } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(1, MOCK_SOCKET_CLIENT_ID, { x: 0, y: -1 })
         client.moveVector = { x: 0, y: 0 }
-        client.handleKeyboardInput({ code: "KeyW", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "KeyW", repeat: false, preventDefault: () => {} } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(2, MOCK_SOCKET_CLIENT_ID, { x: 0, y: -1 })
     })
 
@@ -34,10 +34,10 @@ describe("Testing ClientGameHandler Input Handling", () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
         client.playerMove = playerMoveMock;
-        client.handleKeyboardInput({ code: "ArrowLeft", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "ArrowLeft", repeat: false, preventDefault: () => {} } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(1, MOCK_SOCKET_CLIENT_ID, { x: -1, y: 0 })
         client.moveVector = { x: 0, y: 0 }
-        client.handleKeyboardInput({ code: "KeyA", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "KeyA", repeat: false, preventDefault: () => {} } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(2, MOCK_SOCKET_CLIENT_ID, { x: -1, y: 0 })
     })
 
@@ -45,10 +45,10 @@ describe("Testing ClientGameHandler Input Handling", () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
         client.playerMove = playerMoveMock;
-        client.handleKeyboardInput({ code: "ArrowRight", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "ArrowRight", repeat: false, preventDefault: () => {} } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(1, MOCK_SOCKET_CLIENT_ID, { x: 1, y: 0 })
         client.moveVector = { x: 0, y: 0 }
-        client.handleKeyboardInput({ code: "KeyD", repeat: false } as KeyboardEvent, true)
+        client.handleKeyboardInput({ code: "KeyD", repeat: false, preventDefault: () => {} } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(2, MOCK_SOCKET_CLIENT_ID, { x: 1, y: 0 })
     })
 })
