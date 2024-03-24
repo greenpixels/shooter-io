@@ -4,7 +4,7 @@ import { ClientGameHandler } from "./ClientGameHandler"
 import { Socket } from "socket.io-client";
 import { PlayerDTO } from "@shared/dtos/PlayerDTO";
 import { ProjectileDTO } from "@shared/dtos/ProjectileDTO";
-import { Player } from "./types/Player";
+import { Player } from "./classes/Player";
 const MOCK_SOCKET_CLIENT_ID = "some_id"
 
 describe("Testing ClientGameHandler Input Handling", () => {
