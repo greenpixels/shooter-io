@@ -1,5 +1,6 @@
 import { EntityDTO } from "./EntityDTO";
+import { Vector2DTO } from "./Vector2DTO";
 
 export interface ProjectileDTO extends EntityDTO {
-    rotation: number;
+    direction: Vector2DTO;
 }
