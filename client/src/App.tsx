@@ -33,6 +33,13 @@ function App(props: { socket: Socket }) {
       viewRef.addEventListener("click", (ev) => eventHandler.handleMouseClickInput(ev))
       viewRef.addEventListener("mousemove", (ev) => eventHandler.handleMouseMoveInput(ev))
       window.addEventListener('beforeunload', handleTabClose);
+      const handleResize = (elements : ResizeObserverEntry[]) => {
+        elements.forEach((element) => {
+          eventHandler.canvasSize.x = element.contentRect.width
+          eventHandler.canvasSize.y = element.contentRect.height
+        })
+      }
+      new ResizeObserver(handleResize).observe(viewRef)
       setEventHandler(eventHandler)
     }
 
@@ -50,7 +57,7 @@ function App(props: { socket: Socket }) {
 
   return (
     <div ref={gameParentRef} className={"canvas-container"}>
-      <canvas ref={gameViewRef} style={{ width: canvasSize.x*canvasScale, height: canvasSize.y*canvasScale,  }} width={canvasSize.x} height={canvasSize.y} />
+      <canvas ref={gameViewRef}  width={canvasSize.x} height={canvasSize.y} />
     </div>
   );
 }
