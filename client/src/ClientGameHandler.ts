@@ -86,7 +86,7 @@ export class ClientGameHandler extends GameEventHandler {
           this.playerMove(this.socket.id, this.moveVector)
     }
 
-    handleMouseClickInput(ev: MouseEvent): any {
+    handleMouseClickInput(ev: MouseEvent): void {
         if(!this.socket.id) return
         ev.preventDefault();
         this.playerShoot(this.socket.id)
