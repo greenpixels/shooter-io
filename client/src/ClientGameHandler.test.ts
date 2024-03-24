@@ -64,7 +64,7 @@ describe("Testing ClientGameHandler Socket Events", () => {
     })
 
     test("Game tick with non-existent projectile should trigger the add Projectile logic", () => {
-        const mockProjectileDto: ProjectileDTO = { id: "some_projectile_id", position: { x: 0, y: 0 }, rotation: 0 }
+        const mockProjectileDto: ProjectileDTO = { id: "some_projectile_id", position: { x: 0, y: 0 }, direction: {x: 0, y: 0} }
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID);
         const addProjectileMock = vi.fn()
         client.addProjectile = addProjectileMock
