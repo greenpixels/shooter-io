@@ -3,8 +3,10 @@ canvas {
   image-rendering: crisp-edges;
   /* Chromium + Safari */
   image-rendering: pixelated;
+  width: 100%
 }
 
 .canvas-container:hover {
-    cursor: url("./public/spr_cursor.png") 32 32, auto
+    cursor: url("./assets/spr_cursor.png") 32 32, auto;
+    width: 100%;
 }

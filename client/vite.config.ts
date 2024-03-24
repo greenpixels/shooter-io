@@ -24,7 +24,7 @@ export default defineConfig({
   resolve: {
     alias: [
       {find: "@shared", replacement: path.resolve(__dirname, "../shared")},
-      {find: "@public", replacement: path.resolve(__dirname, "./public")}
+      {find: "@assets", replacement: path.resolve(__dirname, "./src/assets")}
     ],
 },
 })
