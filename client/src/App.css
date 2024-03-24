@@ -6,5 +6,5 @@ canvas {
 }
 
 .canvas-container:hover {
-    cursor: url("./assets/spr_cursor.png") 32 32, auto
+    cursor: url("./public/spr_cursor.png") 32 32, auto
 }
