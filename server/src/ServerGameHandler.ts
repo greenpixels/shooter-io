@@ -8,6 +8,7 @@ import { Vector2 } from "../../shared/classes/Vector2";
 import { lengthdirX, lengthdirY } from "../../shared/helpers/trigonometry";
 import { Projectile } from "./classes/Projectile";
 import { ProjectileDTO } from "../../shared/dtos/ProjectileDTO";
+import {DTOConverter} from "../../shared/classes/DTOConverter"
 
 export class ServerGameHandler extends GameEventHandler {
     private server : Server
@@ -23,14 +24,14 @@ export class ServerGameHandler extends GameEventHandler {
     addPlayer(socket: Socket) {
         const newPlayer = new Player(socket.id, {x: 50, y: 50})
         this.players[socket.id] = newPlayer
-        this.playerSpawn({[socket.id] : newPlayer.toDto()})
+        this.playerSpawn({[socket.id] : DTOConverter.toPlayerDTO(newPlayer)})
         socket.on(this.EVENT_PLAYER_MOVE, this.playerMove.bind(this))
         socket.on(this.EVENT_PLAYER_AIM, this.playerAim.bind(this))
         socket.on(this.EVENT_PLAYER_SHOOT, this.playerShoot.bind(this))
     }
 
     removePlayer(socket: Socket) {
-        this.playerLeave({[socket.id] : this.players[socket.id].toDto()})
+        this.playerLeave({[socket.id] : DTOConverter.toPlayerDTO(this.players[socket.id])})
         delete this.players[socket.id] 
         
     }
@@ -48,7 +49,7 @@ export class ServerGameHandler extends GameEventHandler {
                 original.position.x += lengthdirX(baseSpeed, angle)
                 original.position.y += lengthdirY(baseSpeed, angle)
             }
-            playerDtoMap[id] = original.toDto()
+            playerDtoMap[id] = DTOConverter.toPlayerDTO(original)
         })
 
         Object.keys(visibleProjectiles).forEach((id) => {
@@ -59,7 +60,7 @@ export class ServerGameHandler extends GameEventHandler {
             if(Date.now() - original.createdAt > 500) {
                 this.removeProjectile(original.id)
             } else {
-                projectileDtoMap[id] = original.toDto()
+                projectileDtoMap[id] = DTOConverter.toProjectileDTO(original)
             }
             
         })
@@ -87,7 +88,7 @@ export class ServerGameHandler extends GameEventHandler {
         projectile.position.y += lengthdirY(60, angle)
         
         this.projectiles = {...this.projectiles, [projectile.id]: projectile}
-        this.projectileSpawn({[projectile.id]: projectile.toDto()})
+        this.projectileSpawn({[projectile.id]: DTOConverter.toProjectileDTO(projectile)})
     }
 
     playerAim(socketId: string, aimVector: Vector2DTO): void {

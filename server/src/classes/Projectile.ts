@@ -16,12 +16,4 @@ export class Projectile implements ProjectileDTO {
         this.direction = rotation
         this.createdAt = Date.now()
     }
-
-    toDto() : ProjectileDTO {
-        return {
-            direction: this.direction,
-            id: this.id,
-            position: this.position
-        }
-    }
 }

@@ -5,12 +5,15 @@ import { Player } from "./classes/Player";
 import { Projectile } from "./classes/Projectile";
 import { PlayerDTO } from "@shared/dtos/PlayerDTO";
 import { ProjectileDTO } from "@shared/dtos/ProjectileDTO";
+import {DTOConverter} from "@shared/classes/DTOConverter"
 import { Vector2DTO } from "@shared/dtos/Vector2DTO";
+import { GameInformation } from "./types/GameInformation";
 
 export type ClientGameHandlerProps = {
     socket : Socket,
     game : PIXI.Application<HTMLCanvasElement>,
-    canvasSize: Vector2DTO
+    canvasSize: Vector2DTO,
+    setGameInfo: React.Dispatch<React.SetStateAction<GameInformation>>
 }
 
 export class ClientGameHandler extends GameEventHandler {
@@ -20,6 +23,7 @@ export class ClientGameHandler extends GameEventHandler {
     projectiles : {[key : string] : Projectile} = {}
     moveVector : Vector2DTO = {x: 0, y: 0} 
     canvasSize : Vector2DTO = {x: 0, y: 0}
+    updateGameInformation;
 
     constructor(props : ClientGameHandlerProps) {
         super()
@@ -33,6 +37,17 @@ export class ClientGameHandler extends GameEventHandler {
 
         this.socket.on(this.EVENT_PROJECTILE_SPAWN, this.projectileSpawn.bind(this))
         this.socket.on(this.EVENT_PROJECTILE_DESTROY, this.projectileDestroy.bind(this))
+
+        this.updateGameInformation = () => {
+            if(!this.socket.id) return
+            const playerDtos = Object.keys(this.players).map(key => {
+                return DTOConverter.toPlayerDTO(this.players[key])
+            })
+            playerDtos.sort()
+            props.setGameInfo({players: playerDtos, ownId: this.socket.id})
+        }
+
+        setInterval(this.updateGameInformation, 1000)
     }
 
     handleMouseMoveInput(ev: MouseEvent) {
@@ -59,19 +74,31 @@ export class ClientGameHandler extends GameEventHandler {
         switch(ev.code) {
             case "KeyS":
             case "ArrowDown":
-                this.moveVector.y += amount; break;
+                ev.preventDefault()
+                this.moveVector.y += amount;
+                break;
 
             case "KeyW":
             case "ArrowUp":
-                this.moveVector.y -= amount; break;
+                ev.preventDefault()
+                this.moveVector.y -= amount;
+                break;
 
             case "KeyA":
             case "ArrowLeft":  
-                this.moveVector.x -= amount; break;
+                ev.preventDefault()
+                this.moveVector.x -= amount;
+                break;
                 
             case "KeyD":
             case "ArrowRight": 
-                this.moveVector.x += amount; break;
+                ev.preventDefault()
+                this.moveVector.x += amount;
+                break;
+
+            case "Tab":
+                ev.preventDefault();
+                break;
           }
 
           if(Math.abs(this.moveVector.x) > 1) {
@@ -140,6 +167,7 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     playerSpawn(affectedPlayers : {[key : string] : PlayerDTO}): void {
+        
           Object.keys(affectedPlayers).forEach((id)=>  {
             if(this.players[id] === undefined) {
                 // A player that was not in the game before has joined
@@ -149,6 +177,7 @@ export class ClientGameHandler extends GameEventHandler {
                 this.players[id].sync(affectedPlayers[id])
               }
           })
+          
     }
 
     playerLeave(affectedPlayers: { [key: string]: PlayerDTO; }): void {
@@ -162,6 +191,7 @@ export class ClientGameHandler extends GameEventHandler {
 
     addPlayer(id: string, dto: PlayerDTO) {
         this.players = {...this.players, ...{[id]: new Player(this.game.stage, dto)}}
+        this.updateGameInformation()
     }
 
     addProjectile(id: string, dto: ProjectileDTO) {
@@ -172,6 +202,7 @@ export class ClientGameHandler extends GameEventHandler {
     removePlayer(id: string) {
         this.players[id].cleanup(this.game.stage)
         delete this.players[id]
+        this.updateGameInformation()
     }
 
     projectileSpawn(affectedProjectiles : {[key : string] : ProjectileDTO}): void {
