@@ -6,7 +6,7 @@
     "shared"
   ],
   "scripts": {
-   "lint-and-run-all" : "npm run test --if-present -ws && npm run lint --if-present -ws && npm run build --if-present -ws" 
+   "check-all" : "npm run test --if-present -ws && npm run lint --if-present -ws && npm run build --if-present -ws" 
   },
   "version": "0.0.1",
   "private": true,
