@@ -13,12 +13,4 @@ export class Player implements PlayerDTO {
         this.position = position
         this.lastShotAt = 0
     }
-
-    toDto() : PlayerDTO {
-        return {
-            aimDirection: this.aimDirection,
-            id: this.id,
-            position: this.position
-        }
-    }
 }

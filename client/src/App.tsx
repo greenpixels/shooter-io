@@ -3,13 +3,16 @@ import { Socket } from "socket.io-client"
 import * as PIXI from 'pixi.js'
 import { ClientGameHandler } from "./ClientGameHandler";
 import { Vector2DTO } from "@shared/dtos/Vector2DTO";
-import "./App.css"
+import Style from "./App.module.css"
+import GameUserInterface from "./components/GameUserInterface/GameUserInterface";
+import { GameInformation } from "./types/GameInformation";
 
 const canvasSize: Vector2DTO = { x: 640, y: 360 }
 const canvasScale = 2
 
 function App(props: { socket: Socket }) {
   const [game, setGame] = useState<PIXI.Application<HTMLCanvasElement> | null>(null);
+  const [gameInfo, setGameInfo] = useState<GameInformation>({players: [], ownId: props.socket.id!})
   const [eventHandler, setEventHandler] = useState<ClientGameHandler | null>(null)
   const [running, setRunning] = useState(false)
   const gameViewRef = useRef<HTMLCanvasElement>(null);
@@ -26,7 +29,7 @@ function App(props: { socket: Socket }) {
     } else if(game !== null && !running && viewRef) {
       setRunning(true)
       const size = {x: canvasSize.x * canvasScale, y: canvasSize.y * canvasScale}
-      const eventHandler = new ClientGameHandler({game: game, socket: props.socket, canvasSize: size})
+      const eventHandler = new ClientGameHandler({game: game, socket: props.socket, canvasSize: size, setGameInfo})
       
       document.addEventListener("keydown", (ev) => eventHandler.handleKeyboardInput(ev, true))
       document.addEventListener("keyup", (ev) => eventHandler.handleKeyboardInput(ev, false))
@@ -56,7 +59,8 @@ function App(props: { socket: Socket }) {
   }, [game, gameViewRef, running, eventHandler, props.socket]);
 
   return (
-    <div ref={gameParentRef} className={"canvas-container"}>
+    <div ref={gameParentRef} className={Style.container}>
+      <GameUserInterface gameInfo={gameInfo} />
       <canvas ref={gameViewRef}  width={canvasSize.x} height={canvasSize.y} />
     </div>
   );
