@@ -10,7 +10,7 @@
     },
     "dependencies": {
         "jsdom": "^24.0.0",
-        "pixi.js": "^7.3.2",
+        "pixi.js": "^8.0.4",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "socket.io-client": "^4.7.2"
