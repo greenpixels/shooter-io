@@ -1,31 +1,21 @@
 import { vi } from 'vitest'
+import { Sprite } from 'pixi.js'
 
 // If we don't create empty mocks here, pixi js tries to specify and create a worker on import
-const mockSprite = {
-    position: { x: 0, y: 0 },
-    texture: {
-        baseTexture: {
-            scaleMode: undefined,
-        },
-    },
-    anchor: {
-        set: vi.fn(),
-    },
-    scale: {
-        x: 0,
-        y: 0,
+const mockTexture = {
+    source: {
+        scaleMode: undefined,
     },
 }
 
-vi.mock('pixi.js', () => {
+vi.mock('pixi.js', async (importOriginal) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const actual: any = await importOriginal()
+
     return {
-        Sprite: {
-            from: () => {
-                return mockSprite
-            },
-        },
-        SCALE_MODES: {
-            NEAREST: 'nearest',
+        Sprite: actual.Sprite as Sprite,
+        Assets: {
+            load: async () => mockTexture,
         },
     }
 })
