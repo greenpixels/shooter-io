@@ -1,6 +1,5 @@
 import { GameEventHandler } from '@shared/GameEventHandler'
 import { Socket } from 'socket.io-client'
-import * as PIXI from 'pixi.js'
 import { Player } from './classes/Player'
 import { Projectile } from './classes/Projectile'
 import { PlayerDTO } from '@shared/dtos/PlayerDTO'
@@ -8,16 +7,17 @@ import { ProjectileDTO } from '@shared/dtos/ProjectileDTO'
 import { DTOConverter } from '@shared/classes/DTOConverter'
 import { Vector2DTO } from '@shared/dtos/Vector2DTO'
 import { GameInformation } from './types/GameInformation'
+import { Application, Renderer } from 'pixi.js'
 
 export type ClientGameHandlerProps = {
     socket: Socket
-    game: PIXI.Application<HTMLCanvasElement>
+    game: Application<Renderer<HTMLCanvasElement>>
     canvasSize: Vector2DTO
     setGameInfo: React.Dispatch<React.SetStateAction<GameInformation>>
 }
 
 export class ClientGameHandler extends GameEventHandler {
-    game: PIXI.Application<HTMLCanvasElement>
+    game: Application<Renderer<HTMLCanvasElement>>
     socket: Socket
     players: { [key: string]: Player } = {}
     projectiles: { [key: string]: Projectile } = {}
