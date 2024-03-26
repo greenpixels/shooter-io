@@ -1,4 +1,4 @@
-import { Application } from 'pixi.js'
+import { Application, Renderer } from 'pixi.js'
 import { ClientGameHandler } from './ClientGameHandler'
 import { Socket } from 'socket.io-client'
 import { PlayerDTO } from '@shared/dtos/PlayerDTO'
@@ -123,7 +123,7 @@ function createMockedClient(socketId: string) {
                 sortChildren: vi.fn(),
                 addChild: () => {},
             },
-        } as unknown as Application<HTMLCanvasElement>,
+        } as unknown as Application<Renderer<HTMLCanvasElement>>,
         socket: socketMock as unknown as Socket,
         canvasSize: { x: 1280, y: 720 },
         setGameInfo: () => {},
