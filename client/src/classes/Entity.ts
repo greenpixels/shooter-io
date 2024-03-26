@@ -1,17 +1,16 @@
 import { Vector2DTO } from '@shared/dtos/Vector2DTO.ts'
 import { EntityDTO } from '@shared/dtos/EntityDTO.ts'
-import { Sprite, Container, DisplayObject, SCALE_MODES } from 'pixi.js'
+import { Sprite, Container } from 'pixi.js'
 
 export abstract class Entity<T extends EntityDTO> {
     readonly id: string
     readonly sprite: Sprite
     protected lastPosition: Vector2DTO
 
-    constructor(stage: Container<DisplayObject>, sprite: Sprite, dto: T) {
+    constructor(stage: Container, sprite: Sprite, dto: T) {
         this.id = dto.id
         this.sprite = sprite
-        //this.sprite.anchor.set(-0.5, -0.5)
-        this.sprite.texture.baseTexture.scaleMode = SCALE_MODES.NEAREST
+        this.sprite.texture.source.scaleMode = 'nearest'
         stage.addChild(this.sprite)
         this.lastPosition = this.sprite.position
     }
@@ -28,7 +27,7 @@ export abstract class Entity<T extends EntityDTO> {
         this.sprite.position.y = position.y
     }
 
-    public abstract cleanup(stage: Container<DisplayObject>): void
+    public abstract cleanup(stage: Container): void
 
     public abstract sync(dto: T): void
 }

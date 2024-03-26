@@ -1,17 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client'
-import * as PIXI from 'pixi.js'
 import { ClientGameHandler } from './ClientGameHandler'
 import { Vector2DTO } from '@shared/dtos/Vector2DTO'
 import Style from './App.module.css'
 import GameUserInterface from './components/GameUserInterface/GameUserInterface'
 import { GameInformation } from './types/GameInformation'
+import { Application, Renderer } from 'pixi.js'
 
 const canvasSize: Vector2DTO = { x: 640, y: 360 }
 const canvasScale = 2
 
 function App(props: { socket: Socket }) {
-    const [game, setGame] = useState<PIXI.Application<HTMLCanvasElement> | null>(null)
+    const [game, setGame] = useState<Application<Renderer<HTMLCanvasElement>> | null>(null)
+    const [startedGameInit, setStartedGameInit] = useState(false)
     const [gameInfo, setGameInfo] = useState<GameInformation>({ players: [], ownId: props.socket.id! })
     const [eventHandler, setEventHandler] = useState<ClientGameHandler | null>(null)
     const [running, setRunning] = useState(false)
@@ -24,13 +25,13 @@ function App(props: { socket: Socket }) {
             props.socket.disconnect()
         }
         if (game === null && viewRef) {
-            const newGame = new PIXI.Application<HTMLCanvasElement>({
-                view: viewRef,
-                width: canvasSize.x,
-                height: canvasSize.y,
-                backgroundColor: 0x808080,
-            })
-            setGame(newGame)
+            if (!startedGameInit) {
+                const newGame = new Application<Renderer<HTMLCanvasElement>>()
+                initializeGame(newGame, viewRef).then(() => {
+                    setGame(newGame)
+                })
+                setStartedGameInit(true)
+            }
         } else if (game !== null && !running && viewRef) {
             setRunning(true)
             const size = { x: canvasSize.x * canvasScale, y: canvasSize.y * canvasScale }
@@ -66,7 +67,7 @@ function App(props: { socket: Socket }) {
                 viewRef.addEventListener('mousemove', (ev) => eventHandler.handleMouseMoveInput(ev))
             }
         }
-    }, [game, gameViewRef, running, eventHandler, props.socket])
+    }, [game, gameViewRef, running, eventHandler, props.socket, startedGameInit])
 
     return (
         <div
@@ -83,3 +84,12 @@ function App(props: { socket: Socket }) {
 }
 
 export default App
+
+async function initializeGame(newGame: Application<Renderer<HTMLCanvasElement>>, viewRef: HTMLCanvasElement) {
+    await newGame.init({
+        canvas: viewRef,
+        width: canvasSize.x,
+        height: canvasSize.y,
+        backgroundColor: 0x808080,
+    })
+}
