@@ -67,7 +67,7 @@ function App(props: { socket: Socket }) {
                 viewRef.addEventListener('mousemove', (ev) => eventHandler.handleMouseMoveInput(ev))
             }
         }
-    }, [game, gameViewRef, running, eventHandler, props.socket])
+    }, [game, gameViewRef, running, eventHandler, props.socket, startedGameInit])
 
     return (
         <div
