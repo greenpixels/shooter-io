@@ -9,6 +9,7 @@ import { lengthdirX, lengthdirY } from '../../shared/helpers/trigonometry'
 import { Projectile } from './classes/Projectile'
 import { ProjectileDTO } from '../../shared/dtos/ProjectileDTO'
 import { DTOConverter } from '../../shared/classes/DTOConverter'
+import { log } from 'node:console'
 
 export class ServerGameHandler extends GameEventHandler {
     private server: Server
@@ -90,6 +91,7 @@ export class ServerGameHandler extends GameEventHandler {
 
     playerAim(socketId: string, aimVector: Vector2DTO): void {
         const player = this.players[socketId]
+        if (!player) return
         player.aimDirection = aimVector
     }
 
