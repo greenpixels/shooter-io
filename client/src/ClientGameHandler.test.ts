@@ -124,8 +124,7 @@ function createMockedClient(socketId: string) {
                 addChild: () => {},
             },
         } as unknown as Application<Renderer<HTMLCanvasElement>>,
-        socket: socketMock as unknown as Socket,
+        socket: socketMock as unknown as Socket & { id: string },
         canvasSize: { x: 1280, y: 720 },
-        setGameInfo: () => {},
     })
 }

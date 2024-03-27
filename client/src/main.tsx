@@ -1,18 +1,28 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
-import { io } from 'socket.io-client'
+import { Application, Renderer } from 'pixi.js'
+import { SetupHelper } from './classes/SetupHelper.ts'
 
-const target = import.meta.env.VITE_TARGET
-if (target === undefined) {
-    throw Error(
-        'The process could not start because the environment variable for TARGET was not set propertly (undefined)'
-    )
-}
-const socket = io('ws://' + target)
+const CANVAS_WIDTH = 640
+const CANVAS_HEIGHT = 380
+const socket = await SetupHelper.createSocketConnection()
+const game = new Application<Renderer<HTMLCanvasElement>>()
+
+await game.init({
+    width: CANVAS_WIDTH,
+    height: CANVAS_HEIGHT,
+    backgroundColor: 0x7f7f7f,
+})
+
+const clientEventHandler = SetupHelper.createClientHandlerWithEventListeners(socket, game)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <App socket={socket} />
+        <App
+            socket={socket}
+            game={game}
+            client={clientEventHandler}
+        />
     </React.StrictMode>
 )

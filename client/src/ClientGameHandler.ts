@@ -6,24 +6,21 @@ import { PlayerDTO } from '@shared/dtos/PlayerDTO'
 import { ProjectileDTO } from '@shared/dtos/ProjectileDTO'
 import { DTOConverter } from '@shared/classes/DTOConverter'
 import { Vector2DTO } from '@shared/dtos/Vector2DTO'
-import { GameInformation } from './types/GameInformation'
 import { Application, Renderer } from 'pixi.js'
 
 export type ClientGameHandlerProps = {
-    socket: Socket
+    socket: Socket & { id: string }
     game: Application<Renderer<HTMLCanvasElement>>
     canvasSize: Vector2DTO
-    setGameInfo: React.Dispatch<React.SetStateAction<GameInformation>>
 }
 
 export class ClientGameHandler extends GameEventHandler {
     game: Application<Renderer<HTMLCanvasElement>>
-    socket: Socket
+    socket: Socket & { id: string }
     players: { [key: string]: Player } = {}
     projectiles: { [key: string]: Projectile } = {}
     moveVector: Vector2DTO = { x: 0, y: 0 }
     canvasSize: Vector2DTO = { x: 0, y: 0 }
-    updateGameInformation
 
     constructor(props: ClientGameHandlerProps) {
         super()
@@ -37,21 +34,24 @@ export class ClientGameHandler extends GameEventHandler {
 
         this.socket.on(this.EVENT_PROJECTILE_SPAWN, this.projectileSpawn.bind(this))
         this.socket.on(this.EVENT_PROJECTILE_DESTROY, this.projectileDestroy.bind(this))
+    }
 
-        this.updateGameInformation = () => {
-            if (!this.socket.id) return
-            const playerDtos = Object.keys(this.players).map((key) => {
-                return DTOConverter.toPlayerDTO(this.players[key])
+    updateGameInformation() {
+        const playerDtos = Object.keys(this.players).map((key) => {
+            return DTOConverter.toPlayerDTO(this.players[key])
+        })
+        playerDtos.sort()
+        dispatchEvent(
+            new CustomEvent('ongamestatechange', {
+                detail: {
+                    players: playerDtos,
+                    ownId: this.socket.id,
+                },
             })
-            playerDtos.sort()
-            props.setGameInfo({ players: playerDtos, ownId: this.socket.id })
-        }
-
-        setInterval(this.updateGameInformation, 1000)
+        )
     }
 
     handleMouseMoveInput(ev: MouseEvent) {
-        if (!this.socket.id) return
         const clampValue = 2000
         const centeredX = Math.max(-clampValue, Math.min(clampValue, ev.x - this.canvasSize.x / 2))
         const centeredY = Math.max(-clampValue, Math.min(clampValue, ev.y - this.canvasSize.y / 2))
@@ -118,7 +118,6 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     handleMouseClickInput(ev: MouseEvent): void {
-        if (!this.socket.id) return
         ev.preventDefault()
         this.playerShoot(this.socket.id)
     }
@@ -128,9 +127,6 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     gameTick(visiblePlayers: { [key: string]: PlayerDTO }, visibleProjectiles: { [key: string]: ProjectileDTO }): void {
-        if (!this.socket.id) {
-            return
-        }
         Object.entries(visiblePlayers).forEach(([id, playerDto]) => {
             if (this.players[id] !== undefined) {
                 this.players[id].sync(playerDto)

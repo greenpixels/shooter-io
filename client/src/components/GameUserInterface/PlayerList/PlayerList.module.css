@@ -36,6 +36,7 @@
     pointer-events: all;
     color: white;
     padding: 8px;
+    width: 100%;
 }
 
 .modalbutton:hover {

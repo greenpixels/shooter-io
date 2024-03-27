@@ -19,6 +19,10 @@ body {
     background-color: teal;
 }
 
+.container > * {
+    position: absolute;
+}
+
 .container:hover {
     cursor:
         url('./assets/spr_cursor.png') 32 32,
