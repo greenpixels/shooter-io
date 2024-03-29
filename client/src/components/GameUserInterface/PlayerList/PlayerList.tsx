@@ -10,45 +10,57 @@ export interface IPlayerList {
 }
 
 export default function PlayerList(props: IPlayerList) {
-    const [open, setOpen] = useState(true)
+    const [open, setOpen] = useState(false)
     return (
         <div className={Style.container}>
-            {open ? (
-                <>
-                    <table>
-                        <tbody className={Style.tablebody}>
-                            {props.players.map((player) => {
-                                return (
-                                    <tr className={Style.tablerow}>
-                                        <td className={Style.tabledata}>
-                                            {player.id} {props.ownId === player.id ? '(You)' : null}
-                                        </td>
-                                    </tr>
-                                )
-                            })}
-                        </tbody>
-                    </table>
-                    <button
-                        className={Style.modalbutton}
-                        onClick={() => setOpen(false)}>
-                        Close{' '}
-                        <img
-                            aria-hidden
-                            src={ChevronUp}
-                        />
-                    </button>
-                </>
-            ) : (
-                <button
-                    className={Style.modalbutton}
-                    onClick={() => setOpen(true)}>
-                    Players ({props.players.length}){' '}
-                    <img
-                        aria-hidden
-                        src={ChevronDown}
-                    />
-                </button>
-            )}
+            {open
+                ? renderPlayerList(props.players, props.ownId, setOpen)
+                : renderToggleButton(true, setOpen, props.players.length)}
         </div>
+    )
+}
+
+function renderPlayerList(
+    players: Array<PlayerDTO>,
+    ownId: string,
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>
+) {
+    return (
+        <table>
+            <tbody className={Style.tablebody}>
+                {players.map((player) => {
+                    return (
+                        <tr
+                            key={player.id}
+                            className={Style.tablerow}>
+                            <td className={Style.tabledata}>
+                                {player.id} {ownId === player.id ? '(You)' : null}
+                            </td>
+                        </tr>
+                    )
+                })}
+                {renderToggleButton(false, setOpen, players.length)}
+            </tbody>
+        </table>
+    )
+}
+
+function renderToggleButton(
+    shouldOpen: boolean,
+    setter: React.Dispatch<React.SetStateAction<boolean>>,
+    playerCount: number
+) {
+    const label = shouldOpen ? `Players (${playerCount})` : 'Close'
+    const icon = shouldOpen ? ChevronDown : ChevronUp
+    return (
+        <button
+            className={Style.modalbutton}
+            onClick={() => setter(shouldOpen)}>
+            {label + ' '}
+            <img
+                aria-hidden
+                src={icon}
+            />
+        </button>
     )
 }
