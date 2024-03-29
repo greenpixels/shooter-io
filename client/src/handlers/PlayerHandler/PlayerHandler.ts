@@ -5,25 +5,29 @@ import { DTOMap } from '../../types/DTOMap'
 
 export class PlayerHandler {
     players: { [key: string]: Player } = {}
-    game: Application
+    application: Application
     private updateCallback
-    constructor(updateCallback: () => void, game: Application) {
+    constructor(updateCallback: () => void, application: Application) {
         this.updateCallback = updateCallback
-        this.game = game
+        this.application = application
     }
 
     addPlayer(id: string, dto: PlayerDTO) {
-        this.players = { ...this.players, ...{ [id]: new Player(this.game.stage, dto) } }
+        this.players = { ...this.players, ...{ [id]: new Player(this.application.stage, dto) } }
         this.updateCallback()
     }
 
     removePlayer(id: string) {
-        this.players[id].cleanup(this.game.stage)
+        this.players[id].cleanup(this.application.stage)
         delete this.players[id]
         this.updateCallback()
     }
 
     handlePlayerTickEvent(currentPlayers: DTOMap<PlayerDTO>) {
+        this.syncPlayers(currentPlayers)
+    }
+
+    syncPlayers(currentPlayers: DTOMap<PlayerDTO>) {
         Object.entries(currentPlayers).forEach(([id, playerDto]) => {
             if (this.players[id] !== undefined) {
                 this.players[id].sync(playerDto)
@@ -34,13 +38,7 @@ export class PlayerHandler {
     }
 
     handlePlayerSpawnEvent(affectedPlayers: DTOMap<PlayerDTO>) {
-        Object.keys(affectedPlayers).forEach((id) => {
-            if (this.players[id] === undefined) {
-                this.addPlayer(id, affectedPlayers[id])
-            } else {
-                this.players[id].sync(affectedPlayers[id])
-            }
-        })
+        this.syncPlayers(affectedPlayers)
     }
 
     handlePlayerLeaveEvent(affectedPlayers: { [key: string]: PlayerDTO }) {
