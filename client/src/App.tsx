@@ -2,7 +2,7 @@ import { Socket } from 'socket.io-client'
 import { Application, Renderer } from 'pixi.js'
 import GameUserInterface from './components/GameUserInterface/GameUserInterface'
 import Style from './App.module.css'
-import { ClientGameHandler } from './ClientGameHandler'
+import { ClientGameHandler } from './handlers/ClientGameHandler/ClientGameHandler'
 import { useEffect, useRef } from 'react'
 
 export interface IAppProps {

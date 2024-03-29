@@ -18,24 +18,24 @@ export class ServerGameHandler extends GameEventHandler {
     constructor(server: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, unknown>) {
         super()
         this.server = server
-        setInterval(() => this.gameTick(this.players, this.projectiles), 12)
+        setInterval(() => this.gameTickEvent(this.players, this.projectiles), 12)
     }
 
     addPlayer(socket: Socket) {
         const newPlayer = new Player(socket.id, { x: 50, y: 50 })
         this.players[socket.id] = newPlayer
-        this.playerSpawn({ [socket.id]: DTOConverter.toPlayerDTO(newPlayer) })
-        socket.on(this.EVENT_PLAYER_MOVE, this.playerMove.bind(this))
-        socket.on(this.EVENT_PLAYER_AIM, this.playerAim.bind(this))
-        socket.on(this.EVENT_PLAYER_SHOOT, this.playerShoot.bind(this))
+        this.playerSpawnEvent({ [socket.id]: DTOConverter.toPlayerDTO(newPlayer) })
+        socket.on(this.EVENT_PLAYER_MOVE, this.playerMoveEvent.bind(this))
+        socket.on(this.EVENT_PLAYER_AIM, this.playerAimEvent.bind(this))
+        socket.on(this.EVENT_PLAYER_SHOOT, this.playerShootEvent.bind(this))
     }
 
     removePlayer(socket: Socket) {
-        this.playerLeave({ [socket.id]: DTOConverter.toPlayerDTO(this.players[socket.id]) })
+        this.playerLeaveEvent({ [socket.id]: DTOConverter.toPlayerDTO(this.players[socket.id]) })
         delete this.players[socket.id]
     }
 
-    gameTick(visiblePlayers: { [key: string]: Player }, visibleProjectiles: { [key: string]: Projectile }): void {
+    gameTickEvent(visiblePlayers: { [key: string]: Player }, visibleProjectiles: { [key: string]: Projectile }): void {
         const playerDtoMap: { [key: string]: PlayerDTO } = {}
         const projectileDtoMap: { [key: string]: ProjectileDTO } = {}
         const baseSpeed = 1.5
@@ -65,13 +65,13 @@ export class ServerGameHandler extends GameEventHandler {
         this.server.emit(this.EVENT_GAME_TICK, playerDtoMap, projectileDtoMap)
     }
 
-    playerMove(socketId: string, moveVectorDTO: Vector2DTO): void {
+    playerMoveEvent(socketId: string, moveVectorDTO: Vector2DTO): void {
         const player = this.players[socketId]
         player.velocity.x = Math.sign(moveVectorDTO.x)
         player.velocity.y = Math.sign(moveVectorDTO.y)
     }
 
-    playerShoot(socketId: string): void {
+    playerShootEvent(socketId: string): void {
         const player = this.players[socketId]
         const MINIMAL_SHOT_DELAY = 1000
         const now = Date.now()
@@ -85,35 +85,35 @@ export class ServerGameHandler extends GameEventHandler {
         projectile.position.y += lengthdirY(60, angle)
 
         this.projectiles = { ...this.projectiles, [projectile.id]: projectile }
-        this.projectileSpawn({ [projectile.id]: DTOConverter.toProjectileDTO(projectile) })
+        this.projectileSpawnEvent({ [projectile.id]: DTOConverter.toProjectileDTO(projectile) })
     }
 
-    playerAim(socketId: string, aimVector: Vector2DTO): void {
+    playerAimEvent(socketId: string, aimVector: Vector2DTO): void {
         const player = this.players[socketId]
         player.aimDirection = aimVector
     }
 
-    playerDeath(affectedPlayers: { [key: string]: PlayerDTO }): void {
+    playerDeathEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
         throw new Error('Method not implemented.' + affectedPlayers)
     }
 
-    playerSpawn(affectedPlayers: { [key: string]: PlayerDTO }): void {
+    playerSpawnEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
         this.server.emit(this.EVENT_PLAYER_SPAWN, affectedPlayers)
     }
 
-    playerLeave(affectedPlayers: { [key: string]: PlayerDTO }): void {
+    playerLeaveEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
         this.server.emit(this.EVENT_PLAYER_LEAVE, affectedPlayers)
     }
 
     removeProjectile(projectileID: string) {
-        this.projectileDestroy({ [projectileID]: this.projectiles[projectileID] })
+        this.projectileDestroyEvent({ [projectileID]: this.projectiles[projectileID] })
         delete this.projectiles[projectileID]
     }
 
-    projectileSpawn(projectiles: { [key: string]: ProjectileDTO }): void {
+    projectileSpawnEvent(projectiles: { [key: string]: ProjectileDTO }): void {
         this.server.emit(this.EVENT_PROJECTILE_SPAWN, projectiles)
     }
-    projectileDestroy(affectedProjectiles: { [key: string]: ProjectileDTO }): void {
+    projectileDestroyEvent(affectedProjectiles: { [key: string]: ProjectileDTO }): void {
         this.server.emit(this.EVENT_PROJECTILE_DESTROY, affectedProjectiles)
     }
 }

@@ -3,14 +3,14 @@ import { ClientGameHandler } from './ClientGameHandler'
 import { Socket } from 'socket.io-client'
 import { PlayerDTO } from '@shared/dtos/PlayerDTO'
 import { ProjectileDTO } from '@shared/dtos/ProjectileDTO'
-import { Player } from './classes/Player'
+import { Player } from '../../classes/Player'
 const MOCK_SOCKET_CLIENT_ID = 'some_id'
 
 describe('Testing ClientGameHandler Input Handling', () => {
     test('Holding arrow-down or S should trigger the player-move with the correct arguments', () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
-        client.playerMove = playerMoveMock
+        client.playerMoveEvent = playerMoveMock
         client.handleKeyboardInput(
             { code: 'ArrowDown', repeat: false, preventDefault: () => {} } as KeyboardEvent,
             true
@@ -24,7 +24,7 @@ describe('Testing ClientGameHandler Input Handling', () => {
     test('Holding key-up or W should trigger the player-move with the correct arguments', () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
-        client.playerMove = playerMoveMock
+        client.playerMoveEvent = playerMoveMock
         client.handleKeyboardInput({ code: 'ArrowUp', repeat: false, preventDefault: () => {} } as KeyboardEvent, true)
         expect(playerMoveMock).toHaveBeenNthCalledWith(1, MOCK_SOCKET_CLIENT_ID, { x: 0, y: -1 })
         client.moveVector = { x: 0, y: 0 }
@@ -35,7 +35,7 @@ describe('Testing ClientGameHandler Input Handling', () => {
     test('Holding key-left or A should trigger the player-move with the correct arguments', () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
-        client.playerMove = playerMoveMock
+        client.playerMoveEvent = playerMoveMock
         client.handleKeyboardInput(
             { code: 'ArrowLeft', repeat: false, preventDefault: () => {} } as KeyboardEvent,
             true
@@ -49,7 +49,7 @@ describe('Testing ClientGameHandler Input Handling', () => {
     test('Holding key-right or D should trigger the player-move with the correct arguments', () => {
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const playerMoveMock = vi.fn()
-        client.playerMove = playerMoveMock
+        client.playerMoveEvent = playerMoveMock
         client.handleKeyboardInput(
             { code: 'ArrowRight', repeat: false, preventDefault: () => {} } as KeyboardEvent,
             true
@@ -70,8 +70,8 @@ describe('Testing ClientGameHandler Socket Events', () => {
         }
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const addPlayerMock = vi.fn()
-        client.addPlayer = addPlayerMock
-        client.gameTick({ mockPlayerDto }, {})
+        client.playerHandler.addPlayer = addPlayerMock
+        client.gameTickEvent({ mockPlayerDto }, {})
         expect(addPlayerMock).toHaveBeenCalledTimes(1)
     })
 
@@ -83,8 +83,8 @@ describe('Testing ClientGameHandler Socket Events', () => {
         }
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const addProjectileMock = vi.fn()
-        client.addProjectile = addProjectileMock
-        client.gameTick({}, { mockProjectileDto })
+        client.projectileHandler.addProjectile = addProjectileMock
+        client.gameTickEvent({}, { mockProjectileDto })
         expect(addProjectileMock).toHaveBeenCalledTimes(1)
     })
 
@@ -93,10 +93,10 @@ describe('Testing ClientGameHandler Socket Events', () => {
         const mockPlayerDto: PlayerDTO = { id: playerId, position: { x: 0, y: 0 }, aimDirection: { x: 0, y: 0 } }
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const removePlayerMock = vi.fn()
-        client.removePlayer = removePlayerMock
+        client.playerHandler.removePlayer = removePlayerMock
         const player = new Player(client.game.stage, mockPlayerDto)
-        client.players = { [playerId]: player }
-        client.playerLeave({ [playerId]: mockPlayerDto })
+        client.playerHandler.players = { [playerId]: player }
+        client.playerLeaveEvent({ [playerId]: mockPlayerDto })
         expect(removePlayerMock).toHaveBeenCalledTimes(1)
     })
 
@@ -105,9 +105,9 @@ describe('Testing ClientGameHandler Socket Events', () => {
         const mockPlayerDto: PlayerDTO = { id: playerId, position: { x: 0, y: 0 }, aimDirection: { x: 0, y: 0 } }
         const client = createMockedClient(MOCK_SOCKET_CLIENT_ID)
         const removePlayerMock = vi.fn()
-        client.removePlayer = removePlayerMock
-        client.players = {}
-        client.playerLeave({ [playerId]: mockPlayerDto })
+        client.playerHandler.removePlayer = removePlayerMock
+        client.playerHandler.players = {}
+        client.playerLeaveEvent({ [playerId]: mockPlayerDto })
         expect(removePlayerMock).toHaveBeenCalledTimes(0)
     })
 })

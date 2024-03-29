@@ -1,6 +1,6 @@
 import { Application } from 'pixi.js'
 import { Socket, io } from 'socket.io-client'
-import { ClientGameHandler } from '../ClientGameHandler'
+import { ClientGameHandler } from '../handlers/ClientGameHandler/ClientGameHandler'
 
 export class SetupHelper {
     static async createSocketConnection() {
