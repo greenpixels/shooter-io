@@ -2,6 +2,11 @@
     "name": "@shooter-io/shared",
     "scripts": {
         "test": "vitest run",
-        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
+        "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+        "zod": "node generateZodFiles.mjs"
+    },
+    "devDependencies": {
+        "glob": "^10.3.12",
+        "ts-to-zod": "^3.7.3"
     }
 }
