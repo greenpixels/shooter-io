@@ -7,21 +7,21 @@ import { SetupHelper } from './classes/SetupHelper.ts'
 const CANVAS_WIDTH = 640
 const CANVAS_HEIGHT = 380
 const socket = await SetupHelper.createSocketConnection()
-const game = new Application<Renderer<HTMLCanvasElement>>()
+const application = new Application<Renderer<HTMLCanvasElement>>()
 
-await game.init({
+await application.init({
     width: CANVAS_WIDTH,
     height: CANVAS_HEIGHT,
     backgroundColor: 0x7f7f7f,
 })
 
-const clientEventHandler = SetupHelper.createClientHandlerWithEventListeners(socket, game)
+const clientEventHandler = SetupHelper.createClientHandlerWithEventListeners(socket, application)
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
         <App
             socket={socket}
-            game={game}
+            application={application}
             client={clientEventHandler}
         />
     </React.StrictMode>

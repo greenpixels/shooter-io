@@ -5,9 +5,9 @@ import { Application } from 'pixi.js'
 
 export class ProjectileHandler {
     projectiles: { [key: string]: Projectile } = {}
-    game: Application
-    constructor(game: Application) {
-        this.game = game
+    application: Application
+    constructor(application: Application) {
+        this.application = application
     }
 
     handleProjectileTickEvent(currentProjectiles: DTOMap<ProjectileDTO>) {
@@ -21,7 +21,7 @@ export class ProjectileHandler {
     }
 
     addProjectile(id: string, dto: ProjectileDTO) {
-        const newProjectile = new Projectile(this.game.stage, dto)
+        const newProjectile = new Projectile(this.application.stage, dto)
         this.projectiles = { ...this.projectiles, ...{ [id]: newProjectile } }
     }
 
@@ -36,7 +36,7 @@ export class ProjectileHandler {
     handleProjectileDestroyEvent(affectedProjectiles: DTOMap<ProjectileDTO>) {
         Object.keys(affectedProjectiles).forEach((id) => {
             if (this.projectiles[id] !== undefined) {
-                this.projectiles[id].cleanup(this.game.stage)
+                this.projectiles[id].cleanup(this.application.stage)
                 delete this.projectiles[id]
             }
         })

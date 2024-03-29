@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react'
 
 export interface IAppProps {
     socket: Socket
-    game: Application<Renderer<HTMLCanvasElement>>
+    application: Application<Renderer<HTMLCanvasElement>>
     client: ClientGameHandler
 }
 
@@ -17,9 +17,9 @@ function App(props: IAppProps) {
     useEffect(() => {
         const container = containerRef.current
         if (container) {
-            container.append(props.game.canvas)
+            container.append(props.application.canvas)
         }
-    }, [containerRef, props.game.canvas])
+    }, [containerRef, props.application.canvas])
 
     return (
         <div
