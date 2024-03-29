@@ -22,25 +22,52 @@ export class SetupHelper {
         return socket as Socket & { id: string }
     }
 
-    static createClientHandlerWithEventListeners(socket: Socket & { id: string }, game: Application) {
+    static createClientHandlerWithEventListeners(socket: Socket & { id: string }, application: Application) {
         const clientEventHandler = new ClientGameHandler({
-            game: game,
-            canvasSize: { x: game.screen.width, y: game.screen.height },
+            application: application,
+            canvasSize: { x: application.screen.width, y: application.screen.height },
             socket: socket,
         })
-        game.canvas.addEventListener('click', (ev) => clientEventHandler.handleMouseClickInput(ev))
-        game.canvas.addEventListener('mousemove', (ev) => clientEventHandler.handleMouseMoveInput(ev))
-        document.addEventListener('keydown', (ev) => clientEventHandler.handleKeyboardInput(ev, true))
-        document.addEventListener('keyup', (ev) => clientEventHandler.handleKeyboardInput(ev, false))
-        window.addEventListener('beforeunload', socket.disconnect)
+
+        this.attachEventHandlersToClient(application, clientEventHandler, socket)
+
+        return clientEventHandler
+    }
+
+    static attachEventHandlersToClient(
+        application: Application,
+        clientEventHandler: ClientGameHandler,
+        socket: Socket & { id: string }
+    ) {
+        application.canvas.addEventListener('click', (ev) =>
+            clientEventHandler.inputHandler.handleMouseClickInput(ev, () =>
+                clientEventHandler.playerShootEvent(socket.id)
+            )
+        )
+        application.canvas.addEventListener('mousemove', (ev) =>
+            clientEventHandler.inputHandler.handleMouseMoveInput(ev, (vector) =>
+                clientEventHandler.playerAimEvent(socket.id, vector)
+            )
+        )
+        document.addEventListener('keydown', (ev) =>
+            clientEventHandler.inputHandler.handleKeyboardInput(ev, true, (vector) => {
+                clientEventHandler.playerMoveEvent(socket.id, vector)
+            })
+        )
+        document.addEventListener('keyup', (ev) =>
+            clientEventHandler.inputHandler.handleKeyboardInput(ev, false, (vector) => {
+                clientEventHandler.playerMoveEvent(socket.id, vector)
+            })
+        )
 
         const handleResize = (elements: ResizeObserverEntry[]) => {
             elements.forEach((element) => {
-                clientEventHandler.canvasSize.x = element.contentRect.width
-                clientEventHandler.canvasSize.y = element.contentRect.height
+                clientEventHandler.inputHandler.canvasSize.x = element.contentRect.width
+                clientEventHandler.inputHandler.canvasSize.y = element.contentRect.height
             })
         }
-        new ResizeObserver(handleResize).observe(game.canvas)
-        return clientEventHandler
+
+        window.addEventListener('beforeunload', socket.disconnect)
+        new ResizeObserver(handleResize).observe(application.canvas)
     }
 }

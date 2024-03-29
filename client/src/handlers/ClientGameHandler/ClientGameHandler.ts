@@ -1,6 +1,5 @@
 import { GameEventHandler } from '@shared/GameEventHandler'
 import { Socket } from 'socket.io-client'
-import { Projectile } from '../../classes/Projectile'
 import { PlayerDTO } from '@shared/dtos/PlayerDTO'
 import { ProjectileDTO } from '@shared/dtos/ProjectileDTO'
 import { DTOConverter } from '@shared/classes/DTOConverter'
@@ -9,30 +8,29 @@ import { Application, Renderer } from 'pixi.js'
 import { PlayerHandler } from '../PlayerHandler/PlayerHandler'
 import { DTOMap } from '../../types/DTOMap'
 import { ProjectileHandler } from '../ProjectileHandler/ProjectileHandler'
+import { InputHandler } from '../InputHandler/InputHandler'
 
 export type ClientGameHandlerProps = {
     socket: Socket & { id: string }
-    game: Application<Renderer<HTMLCanvasElement>>
+    application: Application<Renderer<HTMLCanvasElement>>
     canvasSize: Vector2DTO
 }
 
 export class ClientGameHandler extends GameEventHandler {
-    game: Application<Renderer<HTMLCanvasElement>>
+    application: Application<Renderer<HTMLCanvasElement>>
     socket: Socket & { id: string }
-
-    projectiles: { [key: string]: Projectile } = {}
-    moveVector: Vector2DTO = { x: 0, y: 0 }
-    canvasSize: Vector2DTO = { x: 0, y: 0 }
     playerHandler: PlayerHandler
     projectileHandler: ProjectileHandler
+    inputHandler: InputHandler
 
     constructor(props: ClientGameHandlerProps) {
         super()
-        this.game = props.game
+        this.application = props.application
         this.socket = props.socket
-        this.canvasSize = props.canvasSize
-        this.playerHandler = new PlayerHandler(this.updateGameInformation.bind(this), this.game)
-        this.projectileHandler = new ProjectileHandler(this.game)
+
+        this.playerHandler = new PlayerHandler(this.updateGameInformation.bind(this), this.application)
+        this.projectileHandler = new ProjectileHandler(this.application)
+        this.inputHandler = new InputHandler(props.canvasSize)
 
         this.socket.on(this.EVENT_GAME_TICK, this.gameTickEvent.bind(this))
         this.socket.on(this.EVENT_PLAYER_SPAWN, this.playerSpawnEvent.bind(this))
@@ -58,77 +56,6 @@ export class ClientGameHandler extends GameEventHandler {
         )
     }
 
-    handleMouseMoveInput(ev: MouseEvent) {
-        const clampValue = this.canvasSize.x * 2
-        const centeredX = Math.max(-clampValue, Math.min(clampValue, ev.x - this.canvasSize.x / 2))
-        const centeredY = Math.max(-clampValue, Math.min(clampValue, ev.y - this.canvasSize.y / 2))
-        let normalizedMX = centeredX / clampValue
-        if (Math.abs(normalizedMX) > 1) {
-            normalizedMX = Math.sign(normalizedMX)
-        }
-        let normalizedMY = centeredY / clampValue
-        if (Math.abs(normalizedMY) > 1) {
-            normalizedMY = Math.sign(normalizedMY)
-        }
-        this.playerAimEvent(this.socket.id, { x: normalizedMX, y: normalizedMY })
-    }
-
-    handleKeyboardInput(ev: KeyboardEvent, isKeyDown: boolean) {
-        const lastMoveVector = { ...this.moveVector }
-        const downOffset = Math.sign(Number(isKeyDown) - 0.5)
-        const amount = downOffset
-
-        switch (ev.code) {
-            case 'KeyS':
-            case 'ArrowDown':
-                ev.preventDefault()
-                this.moveVector.y += amount
-                break
-
-            case 'KeyW':
-            case 'ArrowUp':
-                ev.preventDefault()
-                this.moveVector.y -= amount
-                break
-
-            case 'KeyA':
-            case 'ArrowLeft':
-                ev.preventDefault()
-                this.moveVector.x -= amount
-                break
-
-            case 'KeyD':
-            case 'ArrowRight':
-                ev.preventDefault()
-                this.moveVector.x += amount
-                break
-
-            case 'Tab':
-                ev.preventDefault()
-                break
-        }
-
-        if (Math.abs(this.moveVector.x) > 1) {
-            this.moveVector.x = Math.sign(this.moveVector.x)
-        }
-        if (Math.abs(this.moveVector.y) > 1) {
-            this.moveVector.y = Math.sign(this.moveVector.y)
-        }
-        if (
-            ev.repeat ||
-            !this.socket.id ||
-            (lastMoveVector.x === this.moveVector.x && lastMoveVector.y === this.moveVector.y)
-        ) {
-            return
-        }
-        this.playerMoveEvent(this.socket.id, this.moveVector)
-    }
-
-    handleMouseClickInput(ev: MouseEvent): void {
-        ev.preventDefault()
-        this.playerShootEvent(this.socket.id)
-    }
-
     playerShootEvent(socketId: string): void {
         this.socket.emit(this.EVENT_PLAYER_SHOOT, socketId)
     }
@@ -137,7 +64,7 @@ export class ClientGameHandler extends GameEventHandler {
         this.playerHandler.handlePlayerTickEvent(visiblePlayers)
         this.projectileHandler.handleProjectileTickEvent(visibleProjectiles)
         this.moveCameraWithCurrentPlayer()
-        this.game.stage.sortChildren()
+        this.application.stage.sortChildren()
     }
 
     playerMoveEvent(socketId: string, moveVector: Vector2DTO): void {
@@ -171,9 +98,9 @@ export class ClientGameHandler extends GameEventHandler {
     moveCameraWithCurrentPlayer() {
         const currentPlayer = this.playerHandler.players[this.socket.id]
         if (currentPlayer) {
-            this.game.stage.pivot.set(
-                currentPlayer.position.x + currentPlayer.sprite.width / 2 - this.game.screen.width / 2,
-                currentPlayer.position.y + currentPlayer.sprite.height / 2 - this.game.screen.height / 2
+            this.application.stage.pivot.set(
+                currentPlayer.position.x + currentPlayer.sprite.width / 2 - this.application.screen.width / 2,
+                currentPlayer.position.y + currentPlayer.sprite.height / 2 - this.application.screen.height / 2
             )
         }
     }
