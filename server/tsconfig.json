@@ -4,7 +4,7 @@
         "outDir": "tsc_output",
         "moduleResolution": "node",
         "module": "CommonJS",
-        "target": "ESNext"
+        "target": "ES2022"
     },
     "extends": "../tsconfig.base.json"
 }
