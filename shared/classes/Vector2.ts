@@ -29,40 +29,47 @@ export class Vector2 implements Vector2DTO {
         return Math.sqrt(this._x ** 2 + this._y ** 2)
     }
 
-    public add(vector: Vector2DTO): void {
+    public add(vector: Vector2DTO): Vector2 {
         this._x += vector.x
         this._y += vector.y
+        return this
     }
 
-    public sub(vector: Vector2DTO): void {
+    public sub(vector: Vector2DTO): Vector2 {
         this._x -= vector.x
         this._y -= vector.y
+        return this
     }
 
-    public mul(vector: Vector2DTO): void {
+    public mul(vector: Vector2DTO): Vector2 {
         this._x *= vector.x
         this._y *= vector.y
+        return this
     }
 
-    public mulScalar(scalar: number): void {
+    public mulScalar(scalar: number): Vector2 {
         this._x *= scalar
         this._y *= scalar
+        return this
     }
 
-    public div(vector: Vector2DTO): void {
+    public div(vector: Vector2DTO): Vector2 {
         this._x /= vector.x
         this._y /= vector.y
+        return this
     }
 
-    public divScalar(scalar: number): void {
+    public divScalar(scalar: number): Vector2 {
         this._x /= scalar
         this._y /= scalar
+        return this
     }
 
-    public normalize(): void {
+    public normalize(): Vector2 {
         const length = this.length()
         this._x /= length
         this._y /= length
+        return this
     }
 
     public equals(vector: Vector2DTO): boolean {
