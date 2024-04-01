@@ -70,11 +70,32 @@ export class ServerGameHandler extends GameEventHandler {
         Object.keys(visibleProjectiles).forEach((id) => {
             const original = visibleProjectiles[id]
             try {
+                let shouldBeRemoved = false
                 projectileDTOSchema.parse(original)
                 const angle = new Vector2(original.direction).angle()
                 original.position.x += lengthdirX(baseSpeed * 9, angle)
                 original.position.y += lengthdirY(baseSpeed * 9, angle)
                 if (Date.now() - original.createdAt > 500) {
+                    shouldBeRemoved = true
+                }
+
+                /**
+                 * This could be a big potential bottle neck and is only a temporary solution
+                 *
+                 * Collisions should be refactored into another class eventually and
+                 * also utilize some sort of mapped grid system to not check every existing player for collisions
+                 */
+                Object.keys(playerDtoMap).forEach((id) => {
+                    if (id !== original.sourcePlayerId) {
+                        const player = playerDtoMap[id].position
+                        const distance = new Vector2(player).sub(original.position).length()
+                        if (distance <= 18) {
+                            shouldBeRemoved = true
+                        }
+                    }
+                })
+
+                if (shouldBeRemoved) {
                     this.removeProjectile(original.id)
                 } else {
                     projectileDtoMap[id] = DTOConverter.toProjectileDTO(original)
