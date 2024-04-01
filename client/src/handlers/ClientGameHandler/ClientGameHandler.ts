@@ -106,8 +106,14 @@ export class ClientGameHandler extends GameEventHandler {
         const currentPlayer = this.playerHandler.players[this.socket.id]
         if (currentPlayer) {
             this.application.stage.pivot.set(
-                currentPlayer.position.x + currentPlayer.sprite.width / 2 - this.application.screen.width / 2,
-                currentPlayer.position.y + currentPlayer.sprite.height / 2 - this.application.screen.height / 2
+                currentPlayer.position.x +
+                    currentPlayer.sprite.width / 2 -
+                    this.application.screen.width / 2 +
+                    currentPlayer.recoilFactor * Math.random() * 2,
+                currentPlayer.position.y +
+                    currentPlayer.sprite.height / 2 -
+                    this.application.screen.height / 2 +
+                    currentPlayer.recoilFactor * Math.random() * 2
             )
         }
     }
