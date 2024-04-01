@@ -3,7 +3,6 @@ import App from './App.tsx'
 import { Application, Renderer } from 'pixi.js'
 import { SetupHelper } from './classes/SetupHelper.ts'
 import '@pixi/gif'
-import 'pixi.js'
 
 const CANVAS_WIDTH = 640
 const CANVAS_HEIGHT = 380
