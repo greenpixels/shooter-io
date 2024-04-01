@@ -9,7 +9,13 @@ import { lengthdirX, lengthdirY } from '../../shared/helpers/trigonometry'
 import { Projectile } from './classes/Projectile'
 import { ProjectileDTO } from '../../shared/dtos/ProjectileDTO'
 import { DTOConverter } from '../../shared/classes/DTOConverter'
+import { z } from 'zod'
+import { vector2DTOSchema } from '../../shared/dtos/Vector2DTO.zod'
+import { playerDTOSchema } from '../../shared/dtos/PlayerDTO.zod'
+import { projectileDTOSchema } from '../../shared/dtos/ProjectileDTO.zod'
+import { Valid } from '../../shared/decorators/Valid'
 
+const Z_PARSE_ERROR = 'Tried to parse an object, but it failed.\n\n'
 export class ServerGameHandler extends GameEventHandler {
     private server: Server
     private players: { [key: string]: Player } = {}
@@ -35,6 +41,11 @@ export class ServerGameHandler extends GameEventHandler {
         delete this.players[socket.id]
     }
 
+    removeProjectile(projectileID: string) {
+        this.projectileDestroyEvent({ [projectileID]: this.projectiles[projectileID] })
+        delete this.projectiles[projectileID]
+    }
+
     gameTickEvent(visiblePlayers: { [key: string]: Player }, visibleProjectiles: { [key: string]: Projectile }): void {
         const playerDtoMap: { [key: string]: PlayerDTO } = {}
         const projectileDtoMap: { [key: string]: ProjectileDTO } = {}
@@ -42,37 +53,68 @@ export class ServerGameHandler extends GameEventHandler {
 
         Object.keys(visiblePlayers).forEach((id) => {
             const original = visiblePlayers[id]
-            if (Math.abs(original.velocity.x) + Math.abs(original.velocity.y) > 0) {
-                const angle = new Vector2(original.velocity).angle()
-                original.position.x += lengthdirX(baseSpeed, angle)
-                original.position.y += lengthdirY(baseSpeed, angle)
+            try {
+                playerDTOSchema.parse(original)
+                if (Math.abs(original.velocity.x) + Math.abs(original.velocity.y) > 0) {
+                    const angle = new Vector2(original.velocity).angle()
+                    original.position.x += lengthdirX(baseSpeed, angle)
+                    original.position.y += lengthdirY(baseSpeed, angle)
+                }
+                playerDtoMap[id] = DTOConverter.toPlayerDTO(original)
+            } catch (error) {
+                console.error(`${Z_PARSE_ERROR}`)
+                console.debug(String(error))
             }
-            playerDtoMap[id] = DTOConverter.toPlayerDTO(original)
         })
 
         Object.keys(visibleProjectiles).forEach((id) => {
             const original = visibleProjectiles[id]
-            const angle = new Vector2(original.direction).angle()
-            original.position.x += lengthdirX(baseSpeed * 9, angle)
-            original.position.y += lengthdirY(baseSpeed * 9, angle)
-            if (Date.now() - original.createdAt > 500) {
-                this.removeProjectile(original.id)
-            } else {
-                projectileDtoMap[id] = DTOConverter.toProjectileDTO(original)
+            try {
+                projectileDTOSchema.parse(original)
+                const angle = new Vector2(original.direction).angle()
+                original.position.x += lengthdirX(baseSpeed * 9, angle)
+                original.position.y += lengthdirY(baseSpeed * 9, angle)
+                if (Date.now() - original.createdAt > 500) {
+                    this.removeProjectile(original.id)
+                } else {
+                    projectileDtoMap[id] = DTOConverter.toProjectileDTO(original)
+                }
+            } catch (error) {
+                console.error(`${Z_PARSE_ERROR}`)
+                console.debug(String(error))
             }
         })
 
         this.server.emit(this.EVENT_GAME_TICK, playerDtoMap, projectileDtoMap)
     }
 
+    @Valid(z.string(), vector2DTOSchema)
     playerMoveEvent(socketId: string, moveVectorDTO: Vector2DTO): void {
+        try {
+            z.string().parse(socketId)
+            vector2DTOSchema.parse(moveVectorDTO)
+        } catch (error) {
+            console.error(`${Z_PARSE_ERROR}`)
+            console.debug(String(error))
+            return
+        }
         const player = this.players[socketId]
+        if (!player) return
         player.velocity.x = Math.sign(moveVectorDTO.x)
         player.velocity.y = Math.sign(moveVectorDTO.y)
     }
 
+    @Valid(z.string())
     playerShootEvent(socketId: string): void {
+        try {
+            z.string().safeParse(socketId)
+        } catch (error) {
+            console.error(`${Z_PARSE_ERROR}`)
+            console.debug(String(error))
+            return
+        }
         const player = this.players[socketId]
+        if (!player) return
         const MINIMAL_SHOT_DELAY = 1000
         const now = Date.now()
         if (now - player.lastShotAt < MINIMAL_SHOT_DELAY) {
@@ -88,8 +130,10 @@ export class ServerGameHandler extends GameEventHandler {
         this.projectileSpawnEvent({ [projectile.id]: DTOConverter.toProjectileDTO(projectile) })
     }
 
+    @Valid(z.string(), vector2DTOSchema)
     playerAimEvent(socketId: string, aimVector: Vector2DTO): void {
         const player = this.players[socketId]
+        if (!player) return
         player.aimDirection = aimVector
     }
 
@@ -103,11 +147,6 @@ export class ServerGameHandler extends GameEventHandler {
 
     playerLeaveEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
         this.server.emit(this.EVENT_PLAYER_LEAVE, affectedPlayers)
-    }
-
-    removeProjectile(projectileID: string) {
-        this.projectileDestroyEvent({ [projectileID]: this.projectiles[projectileID] })
-        delete this.projectiles[projectileID]
     }
 
     projectileSpawnEvent(projectiles: { [key: string]: ProjectileDTO }): void {

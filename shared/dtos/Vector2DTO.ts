@@ -1,4 +1,4 @@
 export interface Vector2DTO {
-    x: number
+    x: number,
     y: number
 }

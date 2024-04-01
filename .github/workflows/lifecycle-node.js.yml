@@ -24,6 +24,9 @@ jobs:
             - name: Audit depencdencies
               run: npm audit
 
+            - name: Generate resources
+              run: npm run generate
+
             # Server Pipeline
 
             - name: Server - Lint

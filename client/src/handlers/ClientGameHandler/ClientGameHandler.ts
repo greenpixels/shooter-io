@@ -9,6 +9,7 @@ import { PlayerHandler } from '../PlayerHandler/PlayerHandler'
 import { DTOMap } from '../../types/DTOMap'
 import { ProjectileHandler } from '../ProjectileHandler/ProjectileHandler'
 import { InputHandler } from '../InputHandler/InputHandler'
+import { FormatHelper } from '@shared/helpers/FormatHelper'
 
 export type ClientGameHandlerProps = {
     socket: Socket & { id: string }
@@ -68,11 +69,11 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     playerMoveEvent(socketId: string, moveVector: Vector2DTO): void {
-        this.socket.emit(this.EVENT_PLAYER_MOVE, socketId, moveVector)
+        this.socket.emit(this.EVENT_PLAYER_MOVE, socketId, FormatHelper.limitVectorDecimals(moveVector))
     }
 
     playerAimEvent(socketId: string, aimVector: Vector2DTO): void {
-        this.socket.emit(this.EVENT_PLAYER_AIM, socketId, aimVector)
+        this.socket.emit(this.EVENT_PLAYER_AIM, socketId, FormatHelper.limitVectorDecimals(aimVector))
     }
 
     playerDeathEvent(...args: Array<unknown>): void {

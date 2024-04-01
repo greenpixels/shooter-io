@@ -6,8 +6,9 @@
         "shared"
     ],
     "scripts": {
-        "check-all": "npm run test --if-present -ws && npm run lint --if-present -ws && npm run build --if-present -ws",
-        "format-all": "prettier . --write"
+        "generate": "npm run _zod",
+        "check": "prettier . --write && npm run test --if-present -ws && npm run lint --if-present -ws && npm run build --if-present -ws",
+        "_zod": "npm run zod -w @shooter-io/shared"
     },
     "version": "0.0.1",
     "private": true,
@@ -21,5 +22,8 @@
         "prettier": "^3.2.5",
         "typescript": "^5.4.2",
         "vitest": "^1.4.0"
+    },
+    "dependencies": {
+        "zod": "^3.22.4"
     }
 }
