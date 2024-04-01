@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import { Application, Renderer } from 'pixi.js'
+import '@pixi/gif'
 import { SetupHelper } from './classes/SetupHelper.ts'
 
 const CANVAS_WIDTH = 640

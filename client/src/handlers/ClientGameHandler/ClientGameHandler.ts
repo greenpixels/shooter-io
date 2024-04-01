@@ -37,6 +37,7 @@ export class ClientGameHandler extends GameEventHandler {
         this.socket.on(this.EVENT_PLAYER_SPAWN, this.playerSpawnEvent.bind(this))
         this.socket.on(this.EVENT_PLAYER_DEATH, this.playerDeathEvent.bind(this))
         this.socket.on(this.EVENT_PLAYER_LEAVE, this.playerLeaveEvent.bind(this))
+        this.socket.on(this.EVENT_PLAYER_HURT, this.playerHurtEvent.bind(this))
 
         this.socket.on(this.EVENT_PROJECTILE_SPAWN, this.projectileSpawnEvent.bind(this))
         this.socket.on(this.EVENT_PROJECTILE_DESTROY, this.projectileDestroyEvent.bind(this))
@@ -84,15 +85,20 @@ export class ClientGameHandler extends GameEventHandler {
         this.playerHandler.handlePlayerSpawnEvent(affectedPlayers)
     }
 
+    playerHurtEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
+        this.playerHandler.handlePlayerHurtEvent(affectedPlayers)
+    }
+
     playerLeaveEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
         this.playerHandler.handlePlayerLeaveEvent(affectedPlayers)
     }
 
     projectileSpawnEvent(affectedProjectiles: { [key: string]: ProjectileDTO }): void {
         this.projectileHandler.handleProjectileSpawnEvent(affectedProjectiles)
+        this.playerHandler.handlePlayerShootingProjectile(affectedProjectiles)
     }
 
-    projectileDestroyEvent(affectedProjectiles: { [key: string]: ProjectileDTO }): void {
+    projectileDestroyEvent(affectedProjectiles: { [key: string]: ProjectileDTO & { hasCollision: boolean } }): void {
         this.projectileHandler.handleProjectileDestroyEvent(affectedProjectiles)
     }
 

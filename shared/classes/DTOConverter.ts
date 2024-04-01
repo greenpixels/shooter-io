@@ -15,6 +15,7 @@ export class DTOConverter {
             direction: projectile.direction,
             id: projectile.id,
             position: projectile.position,
+            sourcePlayerId: projectile.sourcePlayerId,
         }
     }
 }
