@@ -85,7 +85,7 @@ export class ServerGameHandler extends GameEventHandler {
             }
         })
 
-        this.server.emit(this.EVENT_GAME_TICK, playerDtoMap, projectileDtoMap)
+        this.server.volatile.emit(this.EVENT_GAME_TICK, playerDtoMap, projectileDtoMap)
     }
 
     @Valid(z.string(), vector2DTOSchema)

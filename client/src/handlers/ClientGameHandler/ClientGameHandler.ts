@@ -73,7 +73,7 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     playerAimEvent(socketId: string, aimVector: Vector2DTO): void {
-        this.socket.emit(this.EVENT_PLAYER_AIM, socketId, FormatHelper.limitVectorDecimals(aimVector))
+        this.socket.volatile.emit(this.EVENT_PLAYER_AIM, socketId, FormatHelper.limitVectorDecimals(aimVector))
     }
 
     playerDeathEvent(...args: Array<unknown>): void {
