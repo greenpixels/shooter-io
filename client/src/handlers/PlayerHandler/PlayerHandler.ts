@@ -48,4 +48,12 @@ export class PlayerHandler {
             }
         })
     }
+
+    handlePlayerHurtEvent(affectedPlayers: { [key: string]: PlayerDTO }) {
+        Object.keys(affectedPlayers).forEach((id) => {
+            if (this.players[id] !== undefined) {
+                console.log('Received player hurt event')
+            }
+        })
+    }
 }

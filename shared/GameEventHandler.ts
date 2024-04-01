@@ -31,4 +31,8 @@ export abstract class GameEventHandler {
     abstract projectileSpawnEvent(affectedProjectiles: { [key: string]: ProjectileDTO }): void
 
     EVENT_PROJECTILE_DESTROY = 'projectile_destroy_event'
+    abstract projectileDestroyEvent(...args: Array<unknown>): void
+
+    EVENT_PLAYER_HURT = 'player_hurt_event'
+    abstract playerHurtEvent(affectedPlayers: { [key: string]: PlayerDTO }): void
 }

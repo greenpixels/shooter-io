@@ -87,10 +87,11 @@ export class ServerGameHandler extends GameEventHandler {
                  */
                 Object.keys(playerDtoMap).forEach((id) => {
                     if (id !== original.sourcePlayerId) {
-                        const player = playerDtoMap[id].position
-                        const distance = new Vector2(player).sub(original.position).length()
+                        const player = playerDtoMap[id]
+                        const distance = new Vector2(player.position).sub(original.position).length()
                         if (distance <= 18) {
                             shouldBeRemoved = true
+                            this.playerHurtEvent({ [id]: player })
                         }
                     }
                 })
@@ -156,6 +157,10 @@ export class ServerGameHandler extends GameEventHandler {
         const player = this.players[socketId]
         if (!player) return
         player.aimDirection = aimVector
+    }
+
+    playerHurtEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
+        this.server.emit(this.EVENT_PLAYER_HURT, affectedPlayers)
     }
 
     playerDeathEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
