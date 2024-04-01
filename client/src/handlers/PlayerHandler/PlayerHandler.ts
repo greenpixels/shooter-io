@@ -2,6 +2,7 @@ import { Application } from 'pixi.js'
 import { Player } from '../../classes/Player'
 import { PlayerDTO } from '@shared/dtos/PlayerDTO'
 import { DTOMap } from '../../types/DTOMap'
+import { ProjectileDTO } from '@shared/dtos/ProjectileDTO'
 
 export class PlayerHandler {
     players: { [key: string]: Player } = {}
@@ -54,6 +55,17 @@ export class PlayerHandler {
             if (this.players[id] !== undefined) {
                 const player = this.players[id]
                 player.impactFactor = 5
+            }
+        })
+    }
+
+    handlePlayerShootingProjectile(affectedProjectiles: { [key: string]: ProjectileDTO }) {
+        Object.keys(affectedProjectiles).forEach((id) => {
+            const projectile = affectedProjectiles[id]
+            const playerId = projectile.sourcePlayerId
+            if (this.players[playerId] !== undefined) {
+                const player = this.players[playerId]
+                player.recoilFactor = 1
             }
         })
     }

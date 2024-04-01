@@ -3,16 +3,20 @@ import { Entity } from './Entity'
 import { Vector2DTO } from '@shared/dtos/Vector2DTO'
 import { Vector2 } from '@shared/classes/Vector2'
 import { angleToRadians, lengthdirX, lengthdirY } from '@shared/helpers/trigonometry'
-import { Assets, Container, Sprite, effectsMixin } from 'pixi.js'
+import { Assets, Container, Sprite } from 'pixi.js'
 import SniperImage from '@assets/spr_sniper.png'
 import PlayerImage from '@assets/spr_human1.png'
 export class Player extends Entity<PlayerDTO> {
     readonly gunSprite: Sprite
     aimDirection: Vector2DTO = { x: 0, y: 0 }
     /**
-     * This can be used to scale shake or flash effects. Will when the player instance got shot or hurt in any way
+     * This can be used to scale shake or flash effects. Will be set when the player instance got shot or hurt in any way
      */
     impactFactor: number = 0
+    /**
+     * This can be used to scale recoil or muzzle flash effects. Will be set when the player shoots their gun
+     */
+    recoilFactor: number = 0
 
     constructor(stage: Container, dto: PlayerDTO) {
         const playerSprite = new Sprite()
@@ -48,11 +52,20 @@ export class Player extends Entity<PlayerDTO> {
         this.gunSprite.zIndex = this.sprite.zIndex + Math.sign(this.aimDirection.y) / 2
         if (this.aimDirection.x !== 0) this.gunSprite.scale.y = Math.sign(this.aimDirection.x)
 
+        const gunDistance = 9
+
         this.gunSprite.position = {
-            x: this.position.x + this.sprite.width / 2 + lengthdirX(5, angle),
-            y: this.position.y + this.sprite.height / 2 + lengthdirY(5, angle),
+            x:
+                this.position.x +
+                this.sprite.width / 2 +
+                lengthdirX(gunDistance - Math.min(gunDistance, this.recoilFactor * gunDistance), angle),
+            y:
+                this.position.y +
+                this.sprite.height / 2 +
+                lengthdirY(gunDistance - Math.min(gunDistance, this.recoilFactor * gunDistance), angle),
         }
         this.impactFactor *= 0.85
+        this.recoilFactor *= 0.75
     }
 
     public cleanup(stage: Container): void {
