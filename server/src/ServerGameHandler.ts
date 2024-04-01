@@ -41,8 +41,10 @@ export class ServerGameHandler extends GameEventHandler {
         delete this.players[socket.id]
     }
 
-    removeProjectile(projectileID: string) {
-        this.projectileDestroyEvent({ [projectileID]: this.projectiles[projectileID] })
+    removeProjectile(projectileID: string, hasCollision: boolean) {
+        this.projectileDestroyEvent({
+            [projectileID]: { ...this.projectiles[projectileID], hasCollision: hasCollision },
+        })
         delete this.projectiles[projectileID]
     }
 
@@ -70,13 +72,14 @@ export class ServerGameHandler extends GameEventHandler {
         Object.keys(visibleProjectiles).forEach((id) => {
             const original = visibleProjectiles[id]
             try {
-                let shouldBeRemoved = false
+                let isRemoved = false
                 projectileDTOSchema.parse(original)
                 const angle = new Vector2(original.direction).angle()
                 original.position.x += lengthdirX(baseSpeed * 9, angle)
                 original.position.y += lengthdirY(baseSpeed * 9, angle)
                 if (Date.now() - original.createdAt > 500) {
-                    shouldBeRemoved = true
+                    this.removeProjectile(original.id, false)
+                    isRemoved = true
                 }
 
                 /**
@@ -86,21 +89,17 @@ export class ServerGameHandler extends GameEventHandler {
                  * also utilize some sort of mapped grid system to not check every existing player for collisions
                  */
                 Object.keys(playerDtoMap).forEach((id) => {
-                    if (id !== original.sourcePlayerId) {
+                    if (id !== original.sourcePlayerId && !isRemoved) {
                         const player = playerDtoMap[id]
                         const distance = new Vector2(player.position).sub(original.position).length()
                         if (distance <= 18) {
-                            shouldBeRemoved = true
+                            this.removeProjectile(original.id, true)
                             this.playerHurtEvent({ [id]: player })
                         }
                     }
                 })
-
-                if (shouldBeRemoved) {
-                    this.removeProjectile(original.id)
-                } else {
-                    projectileDtoMap[id] = DTOConverter.toProjectileDTO(original)
-                }
+                if (isRemoved) return
+                projectileDtoMap[id] = DTOConverter.toProjectileDTO(original)
             } catch (error) {
                 console.error(`${Z_PARSE_ERROR}`)
                 console.debug(String(error))
@@ -178,7 +177,7 @@ export class ServerGameHandler extends GameEventHandler {
     projectileSpawnEvent(projectiles: { [key: string]: ProjectileDTO }): void {
         this.server.emit(this.EVENT_PROJECTILE_SPAWN, projectiles)
     }
-    projectileDestroyEvent(affectedProjectiles: { [key: string]: ProjectileDTO }): void {
+    projectileDestroyEvent(affectedProjectiles: { [key: string]: ProjectileDTO & { hasCollision: boolean } }): void {
         this.server.emit(this.EVENT_PROJECTILE_DESTROY, affectedProjectiles)
     }
 }

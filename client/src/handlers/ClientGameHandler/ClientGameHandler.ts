@@ -98,7 +98,7 @@ export class ClientGameHandler extends GameEventHandler {
         this.playerHandler.handlePlayerShootingProjectile(affectedProjectiles)
     }
 
-    projectileDestroyEvent(affectedProjectiles: { [key: string]: ProjectileDTO }): void {
+    projectileDestroyEvent(affectedProjectiles: { [key: string]: ProjectileDTO & { hasCollision: boolean } }): void {
         this.projectileHandler.handleProjectileDestroyEvent(affectedProjectiles)
     }
 
