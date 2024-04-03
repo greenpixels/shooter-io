@@ -1,7 +1,7 @@
 import * as express from 'express'
 import { createServer } from 'node:http'
 import { Server } from 'socket.io'
-import { ServerGameHandler } from './ServerGameHandler'
+import { ServerGameHandler } from './ServerGameHandler/ServerGameHandler'
 import * as cors from 'cors'
 
 const app = express()
@@ -19,10 +19,10 @@ const io = new Server(server, {
 const gameHandler = new ServerGameHandler(io)
 
 io.on('connection', (socket) => {
-    gameHandler.addPlayer(socket)
+    gameHandler.playerHandler.addPlayer(socket)
 
     socket.on('disconnect', () => {
-        gameHandler.removePlayer(socket)
+        gameHandler.playerHandler.removePlayer(socket)
     })
 })
 

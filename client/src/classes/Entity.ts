@@ -1,5 +1,4 @@
-import { Vector2DTO } from '@shared/dtos/Vector2DTO.ts'
-import { EntityDTO } from '@shared/dtos/EntityDTO.ts'
+import { Vector2DTO, EntityDTO } from '@shared/index'
 import { Sprite, Container } from 'pixi.js'
 
 export abstract class Entity<T extends EntityDTO> {

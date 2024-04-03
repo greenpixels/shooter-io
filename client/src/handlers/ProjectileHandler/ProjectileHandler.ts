@@ -1,5 +1,4 @@
-import { ProjectileDTO } from '@shared/dtos/ProjectileDTO'
-import { DTOMap } from '../../types/DTOMap'
+import { ProjectileDTO, KeyMap } from '@shared/index'
 import { Projectile } from '../../classes/Projectile'
 import { Application } from 'pixi.js'
 import { ProjectileExplosionEffect } from '../../classes/effects/ProjectileExplosionEffect'
@@ -11,7 +10,7 @@ export class ProjectileHandler {
         this.application = application
     }
 
-    handleProjectileTickEvent(currentProjectiles: DTOMap<ProjectileDTO>) {
+    handleProjectileTickEvent(currentProjectiles: KeyMap<ProjectileDTO>) {
         Object.entries(currentProjectiles).forEach(([id, projectileDto]) => {
             if (this.projectiles[id] !== undefined) {
                 this.projectiles[id].sync(projectileDto)
@@ -26,7 +25,7 @@ export class ProjectileHandler {
         this.projectiles = { ...this.projectiles, ...{ [id]: newProjectile } }
     }
 
-    handleProjectileSpawnEvent(affectedProjectiles: DTOMap<ProjectileDTO>) {
+    handleProjectileSpawnEvent(affectedProjectiles: KeyMap<ProjectileDTO>) {
         Object.keys(affectedProjectiles).forEach((id) => {
             if (this.projectiles[id] === undefined) {
                 this.addProjectile(id, affectedProjectiles[id])
@@ -34,7 +33,8 @@ export class ProjectileHandler {
         })
     }
 
-    handleProjectileDestroyEvent(affectedProjectiles: DTOMap<ProjectileDTO & { hasCollision: boolean }>) {
+    handleProjectileDestroyEvent(affectedProjectiles: KeyMap<ProjectileDTO & { hasCollision: boolean }>) {
+        console.log(String(Date.now()) + ' Projectile destrosy event')
         Object.keys(affectedProjectiles).forEach((id) => {
             const projectileDTO = affectedProjectiles[id]
             const projectile = this.projectiles[id]

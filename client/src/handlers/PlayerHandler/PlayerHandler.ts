@@ -1,8 +1,6 @@
 import { Application } from 'pixi.js'
 import { Player } from '../../classes/Player'
-import { PlayerDTO } from '@shared/dtos/PlayerDTO'
-import { DTOMap } from '../../types/DTOMap'
-import { ProjectileDTO } from '@shared/dtos/ProjectileDTO'
+import { PlayerDTO, KeyMap, ProjectileDTO } from '@shared/index'
 
 export class PlayerHandler {
     players: { [key: string]: Player } = {}
@@ -24,11 +22,11 @@ export class PlayerHandler {
         this.updateCallback()
     }
 
-    handlePlayerTickEvent(currentPlayers: DTOMap<PlayerDTO>) {
+    handlePlayerTickEvent(currentPlayers: KeyMap<PlayerDTO>) {
         this.syncPlayers(currentPlayers)
     }
 
-    syncPlayers(currentPlayers: DTOMap<PlayerDTO>) {
+    syncPlayers(currentPlayers: KeyMap<PlayerDTO>) {
         Object.entries(currentPlayers).forEach(([id, playerDto]) => {
             if (this.players[id] !== undefined) {
                 this.players[id].sync(playerDto)
@@ -38,7 +36,7 @@ export class PlayerHandler {
         })
     }
 
-    handlePlayerSpawnEvent(affectedPlayers: DTOMap<PlayerDTO>) {
+    handlePlayerSpawnEvent(affectedPlayers: KeyMap<PlayerDTO>) {
         this.syncPlayers(affectedPlayers)
     }
 

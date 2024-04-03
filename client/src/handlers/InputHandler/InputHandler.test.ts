@@ -1,4 +1,4 @@
-import { Vector2DTO } from '@shared/dtos/Vector2DTO'
+import { Vector2DTO } from '@shared/index'
 import { InputHandler } from './InputHandler'
 const MOCK_SCREEN_SIZE = { x: 1000, y: 1000 }
 
