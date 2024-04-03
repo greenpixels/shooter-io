@@ -6,7 +6,7 @@ import { DTOConverter } from '@shared/classes/DTOConverter'
 import { Vector2DTO } from '@shared/dtos/Vector2DTO'
 import { Application, Renderer } from 'pixi.js'
 import { PlayerHandler } from '../PlayerHandler/PlayerHandler'
-import { DTOMap } from '../../types/DTOMap'
+import { KeyMap } from '@shared/types/KeyMap'
 import { ProjectileHandler } from '../ProjectileHandler/ProjectileHandler'
 import { InputHandler } from '../InputHandler/InputHandler'
 import { FormatHelper } from '@shared/helpers/FormatHelper'
@@ -62,7 +62,7 @@ export class ClientGameHandler extends GameEventHandler {
         this.socket.emit(this.EVENT_PLAYER_SHOOT, socketId)
     }
 
-    gameTickEvent(visiblePlayers: DTOMap<PlayerDTO>, visibleProjectiles: { [key: string]: ProjectileDTO }): void {
+    gameTickEvent(visiblePlayers: KeyMap<PlayerDTO>, visibleProjectiles: { [key: string]: ProjectileDTO }): void {
         this.playerHandler.handlePlayerTickEvent(visiblePlayers)
         this.projectileHandler.handleProjectileTickEvent(visibleProjectiles)
         this.moveCameraWithCurrentPlayer()

@@ -2,7 +2,7 @@ import { PlayerDTO } from '@shared/dtos/PlayerDTO'
 import { ApplicationMock } from '../../__mocks__/Application.mock'
 import { PlayerHandler } from './PlayerHandler'
 import { Player } from '../../classes/Player'
-import { DTOMap } from '../../types/DTOMap'
+import { KeyMap } from '@shared/types/KeyMap'
 
 describe(`Testing PlayerHandler`, () => {
     const application = ApplicationMock()
@@ -24,7 +24,7 @@ describe(`Testing PlayerHandler`, () => {
     })
 })
 
-function createPlayerSyncTest(playerHandler: PlayerHandler, handleEvent: (players: DTOMap<PlayerDTO>) => void) {
+function createPlayerSyncTest(playerHandler: PlayerHandler, handleEvent: (players: KeyMap<PlayerDTO>) => void) {
     const mockPlayer = createMockPlayer('player_id_first')
     test(`${handleEvent.name}: Should add a new player if the player does not yet exist on the client`, () => {
         playerHandler.addPlayer = vi.fn()
