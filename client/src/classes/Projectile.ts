@@ -1,9 +1,7 @@
-import { ProjectileDTO } from '@shared/dtos/ProjectileDTO.ts'
+import { ProjectileDTO, Vector2, Trigonometry } from '@shared/index'
 import { Entity } from './Entity'
 import { Assets, Container, Sprite } from 'pixi.js'
 import BulletImage from '@assets/spr_bullet.png'
-import { angleToRadians } from '@shared/helpers/trigonometry'
-import { Vector2 } from '@shared/classes/Vector2'
 
 export class Projectile extends Entity<ProjectileDTO> {
     constructor(stage: Container, dto: ProjectileDTO) {
@@ -24,7 +22,7 @@ export class Projectile extends Entity<ProjectileDTO> {
     public sync(dto: ProjectileDTO) {
         this.position = dto.position
         const angle = new Vector2(dto.direction).angle()
-        this.sprite.rotation = angleToRadians(angle)
+        this.sprite.rotation = Trigonometry.angleToRadians(angle)
     }
 
     public cleanup(stage: Container): void {

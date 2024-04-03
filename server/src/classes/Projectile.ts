@@ -1,5 +1,4 @@
-import { Vector2DTO } from '../../../shared/dtos/Vector2DTO'
-import { ProjectileDTO } from '../../../shared/dtos/ProjectileDTO'
+import { Vector2DTO, ProjectileDTO } from '../../../shared/index'
 import { randomUUID } from 'crypto'
 
 export class Projectile implements ProjectileDTO {

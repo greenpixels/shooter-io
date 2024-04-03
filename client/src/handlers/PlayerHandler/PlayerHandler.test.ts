@@ -1,8 +1,7 @@
-import { PlayerDTO } from '@shared/dtos/PlayerDTO'
+import { PlayerDTO, KeyMap } from '@shared/index'
 import { ApplicationMock } from '../../__mocks__/Application.mock'
 import { PlayerHandler } from './PlayerHandler'
 import { Player } from '../../classes/Player'
-import { KeyMap } from '@shared/types/KeyMap'
 
 describe(`Testing PlayerHandler`, () => {
     const application = ApplicationMock()

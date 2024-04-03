@@ -1,4 +1,4 @@
-import { PlayerDTO } from '@shared/dtos/PlayerDTO'
+import { PlayerDTO } from '@shared/index'
 import { useState } from 'react'
 import Style from './PlayerList.module.css'
 import ChevronDown from '@assets/ui_chevron_down.svg'

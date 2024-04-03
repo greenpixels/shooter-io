@@ -1,4 +1,4 @@
-import { Vector2DTO } from '@shared/dtos/Vector2DTO'
+import { Vector2DTO } from '@shared/index'
 
 export class InputHandler {
     moveVector: Vector2DTO = { x: 0, y: 0 }

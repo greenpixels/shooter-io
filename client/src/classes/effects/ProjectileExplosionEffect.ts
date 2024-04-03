@@ -1,4 +1,4 @@
-import { Vector2DTO } from '@shared/dtos/Vector2DTO'
+import { Vector2DTO } from '@shared/index'
 import { Container } from 'pixi.js'
 import ExplosionImage from '@assets/spr_explosion.gif'
 import { ImportHelper } from '../ImportHelper'

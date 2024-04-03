@@ -1,15 +1,17 @@
-import { GameEventHandler } from '../../../shared/GameEventHandler'
+import {
+    GameEventHandler,
+    PlayerDTO,
+    Vector2DTO,
+    ProjectileDTO,
+    DTOConverter,
+    vector2DTOSchema,
+    Valid,
+} from '../../../shared/index'
 import { Server } from 'socket.io'
-import { PlayerDTO } from '../../../shared/dtos/PlayerDTO'
 import { Player } from '../classes/Player'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
-import { Vector2DTO } from '../../../shared/dtos/Vector2DTO'
 import { Projectile } from '../classes/Projectile'
-import { ProjectileDTO } from '../../../shared/dtos/ProjectileDTO'
-import { DTOConverter } from '../../../shared/classes/DTOConverter'
 import { z } from 'zod'
-import { vector2DTOSchema } from '../../../shared/dtos/Vector2DTO.zod'
-import { Valid } from '../../../shared/decorators/Valid'
 import { PlayerHandler } from '../PlayerHandler/PlayerHandler'
 import { ProjectileHandler } from '../ProjectileHandler/ProjectileHandler'
 

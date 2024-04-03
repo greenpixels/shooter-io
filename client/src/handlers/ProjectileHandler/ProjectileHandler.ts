@@ -1,5 +1,4 @@
-import { ProjectileDTO } from '@shared/dtos/ProjectileDTO'
-import { KeyMap } from '@shared/types/KeyMap'
+import { ProjectileDTO, KeyMap } from '@shared/index'
 import { Projectile } from '../../classes/Projectile'
 import { Application } from 'pixi.js'
 import { ProjectileExplosionEffect } from '../../classes/effects/ProjectileExplosionEffect'

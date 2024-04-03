@@ -1,8 +1,6 @@
 import { Application } from 'pixi.js'
 import { Player } from '../../classes/Player'
-import { PlayerDTO } from '@shared/dtos/PlayerDTO'
-import { KeyMap } from '@shared/types/KeyMap'
-import { ProjectileDTO } from '@shared/dtos/ProjectileDTO'
+import { PlayerDTO, KeyMap, ProjectileDTO } from '@shared/index'
 
 export class PlayerHandler {
     players: { [key: string]: Player } = {}

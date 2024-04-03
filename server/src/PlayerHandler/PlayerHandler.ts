@@ -1,13 +1,15 @@
 import { Socket } from 'socket.io'
-import DTOConverter from '../../../shared/classes/DTOConverter'
-import { Vector2 } from '../../../shared/classes/Vector2'
-import { PlayerDTO } from '../../../shared/dtos/PlayerDTO'
-import { lengthdirX, lengthdirY } from '../../../shared/helpers/trigonometry'
+import {
+    DTOConverter,
+    Trigonometry,
+    Vector2DTO,
+    GameEventHandler,
+    Vector2,
+    PlayerDTO,
+    KeyMap,
+} from '../../../shared/index'
 import { Player } from '../classes/Player'
 import { Projectile } from '../classes/Projectile'
-import { Vector2DTO } from '../../../shared/dtos/Vector2DTO'
-import { KeyMap } from '../../../shared/types/KeyMap'
-import { GameEventHandler } from '../../../shared/GameEventHandler'
 import { GlobalValuesMap } from '../classes/GlobalValuesMap'
 
 export class PlayerHandler {
@@ -54,8 +56,8 @@ export class PlayerHandler {
         player.lastShotAt = now
         const projectile = new Projectile(socketId, { ...player.position }, { ...player.aimDirection })
         const angle = new Vector2(projectile.direction).angle()
-        projectile.position.x += lengthdirX(60, angle)
-        projectile.position.y += lengthdirY(60, angle)
+        projectile.position.x += Trigonometry.lengthdirX(60, angle)
+        projectile.position.y += Trigonometry.lengthdirY(60, angle)
         return projectile
     }
 
@@ -74,8 +76,8 @@ export class PlayerHandler {
         if (Math.abs(player.velocity.x) + Math.abs(player.velocity.y) > 0) {
             const angle = new Vector2(player.velocity).angle()
             const baseSpeed = GlobalValuesMap.PLAYER_BASE_SPEED
-            player.position.x += lengthdirX(baseSpeed, angle)
-            player.position.y += lengthdirY(baseSpeed, angle)
+            player.position.x += Trigonometry.lengthdirX(baseSpeed, angle)
+            player.position.y += Trigonometry.lengthdirY(baseSpeed, angle)
         }
         playerDtoMap[player.id] = DTOConverter.toPlayerDTO(player)
     }

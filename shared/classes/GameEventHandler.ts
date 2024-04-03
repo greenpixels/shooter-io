@@ -1,6 +1,6 @@
-import { ProjectileDTO } from './dtos/ProjectileDTO'
-import { PlayerDTO } from './dtos/PlayerDTO'
-import { Vector2DTO } from './dtos/Vector2DTO'
+import { ProjectileDTO } from '../dtos/ProjectileDTO'
+import { PlayerDTO } from '../dtos/PlayerDTO'
+import { Vector2DTO } from '../dtos/Vector2DTO'
 
 export abstract class GameEventHandler {
     EVENT_GAME_TICK = 'game_tick_event'

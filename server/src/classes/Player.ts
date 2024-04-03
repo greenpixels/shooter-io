@@ -1,5 +1,4 @@
-import { PlayerDTO } from '../../../shared/dtos/PlayerDTO'
-import { Vector2DTO } from '../../../shared/dtos/Vector2DTO'
+import { PlayerDTO, Vector2DTO } from '../../../shared/index'
 
 export class Player implements PlayerDTO {
     id: string

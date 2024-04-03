@@ -1,5 +1,4 @@
-import { PlayerDTO } from '../dtos/PlayerDTO'
-import { ProjectileDTO } from '../dtos/ProjectileDTO'
+import { PlayerDTO, ProjectileDTO } from '../'
 
 export class DTOConverter {
     static toPlayerDTO(player: PlayerDTO) {
