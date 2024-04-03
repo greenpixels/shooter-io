@@ -35,6 +35,7 @@ export class ProjectileHandler {
     }
 
     handleProjectileDestroyEvent(affectedProjectiles: KeyMap<ProjectileDTO & { hasCollision: boolean }>) {
+        console.log(String(Date.now()) + ' Projectile destrosy event')
         Object.keys(affectedProjectiles).forEach((id) => {
             const projectileDTO = affectedProjectiles[id]
             const projectile = this.projectiles[id]
