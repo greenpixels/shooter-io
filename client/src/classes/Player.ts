@@ -1,10 +1,14 @@
 import { PlayerDTO, Trigonometry, Vector2DTO, Vector2 } from '@shared/index'
 import { Entity } from './Entity'
-import { Assets, Container, Sprite } from 'pixi.js'
-import SniperImage from '@assets/spr_sniper.png'
-import PlayerImage from '@assets/spr_human1.png'
+import { Container, Sprite } from 'pixi.js'
+import { AssetHelper } from './AssetHelper'
+import { AnimatedGIF } from '@pixi/gif'
+
+export type TPlayerState = 'idle' | 'moving'
 export class Player extends Entity<PlayerDTO> {
     readonly gunSprite: Sprite
+    private state: TPlayerState = 'idle'
+    private container
     aimDirection: Vector2DTO = { x: 0, y: 0 }
     /**
      * This can be used to scale shake or flash effects. Will be set when the player instance got shot or hurt in any way
@@ -15,34 +19,61 @@ export class Player extends Entity<PlayerDTO> {
      */
     recoilFactor: number = 0
 
-    constructor(stage: Container, dto: PlayerDTO) {
-        const playerSprite = new Sprite()
-        Assets.load(PlayerImage).then((loadedTexture) => {
-            loadedTexture.source.scaleMode = 'nearest'
-            playerSprite.texture = loadedTexture
-        })
-        playerSprite.anchor.set(0.5, 0.5)
-        super(stage, playerSprite, dto)
-        this.gunSprite = new Sprite()
-        Assets.load(SniperImage).then((loadedTexture) => {
-            loadedTexture.source.scaleMode = 'nearest'
-            this.gunSprite.texture = loadedTexture
-        })
-        this.gunSprite.anchor.set(0, 0.5)
-
-        stage.addChild(this.gunSprite)
+    constructor(container: Container, dto: PlayerDTO) {
+        const playerSprite = AssetHelper.getSpriteAsset('playerIdle')!
+        super(container, playerSprite, dto)
+        this.gunSprite = AssetHelper.getSpriteAsset('gunSniper', { anchor: { x: 0, y: 0.5 } })!
+        this.container = container
+        this.container.addChild(this.gunSprite)
         this.sync(dto)
     }
 
     public sync(dto: PlayerDTO) {
         this.lastPosition = this.position
         this.position = dto.position
+
+        if (!this.isStandingStill() && this.state === 'idle') {
+            this.switchSprite(AssetHelper.getSpriteAsset('playerWalk'))
+            this.state = 'moving'
+            console.log('Switched to moving')
+        }
+
+        if (this.isStandingStill() && this.state === 'moving') {
+            this.switchSprite(AssetHelper.getSpriteAsset('playerIdle'))
+            this.state = 'idle'
+            console.log('Switched to idle')
+        }
+
+        switch (this.state) {
+            case 'moving':
+                this.stateMoving()
+                break
+            case 'idle':
+                this.stateIdle()
+                break
+        }
+
+        this.syncWeapon(dto)
         this.sprite.pivot.set(Math.random() * this.impactFactor, Math.random() * this.impactFactor)
         this.sprite.zIndex = this.position.y
+        this.impactFactor *= 0.85
+        this.recoilFactor *= 0.75
+    }
+
+    private stateMoving() {
         const lastStepDistance = Math.round(Math.sign(this.position.x - this.lastPosition.x))
         if (lastStepDistance !== 0) {
             this.sprite.scale.x = lastStepDistance
         }
+    }
+
+    private stateIdle() {}
+
+    public isStandingStill() {
+        return this.lastPosition.x === this.position.x && this.lastPosition.y === this.position.y
+    }
+
+    private syncWeapon(dto: PlayerDTO) {
         this.aimDirection = dto.aimDirection
         const angle = new Vector2(this.aimDirection).angle()
         this.gunSprite.rotation = Trigonometry.angleToRadians(angle)
@@ -61,12 +92,20 @@ export class Player extends Entity<PlayerDTO> {
                 this.sprite.height / 2 +
                 Trigonometry.lengthdirY(gunDistance - Math.min(gunDistance, this.recoilFactor * gunDistance), angle),
         }
-        this.impactFactor *= 0.85
-        this.recoilFactor *= 0.75
     }
 
-    public cleanup(stage: Container): void {
-        stage.removeChild(this.sprite)
-        stage.removeChild(this.gunSprite)
+    public switchSprite(newSprite: Sprite | AnimatedGIF) {
+        if (this.sprite.uid === newSprite.uid) return
+        const replacement = newSprite
+        replacement.position = this.sprite.position
+        replacement.scale.x = this.sprite.scale.x
+        this.container.addChild(replacement)
+        this.container.removeChild(this.sprite)
+        this.sprite = replacement
+    }
+
+    public cleanup(): void {
+        this.container.removeChild(this.sprite)
+        this.container.removeChild(this.gunSprite)
     }
 }
