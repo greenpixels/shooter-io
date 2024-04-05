@@ -8,11 +8,11 @@ import {
     FormatHelper,
 } from '@shared/index'
 import { Socket } from 'socket.io-client'
-import { Application, Assets, Container, Renderer, Sprite, UVs } from 'pixi.js'
+import { Application, Container, Renderer, Sprite, UVs } from 'pixi.js'
 import { PlayerHandler } from '../PlayerHandler/PlayerHandler'
 import { ProjectileHandler } from '../ProjectileHandler/ProjectileHandler'
 import { InputHandler } from '../InputHandler/InputHandler'
-import GroundImage from '@assets/spr_ground.png'
+import { AssetHelper } from '../../classes/AssetHelper'
 
 export type ClientGameHandlerProps = {
     socket: Socket & { id: string }
@@ -33,13 +33,9 @@ export class ClientGameHandler extends GameEventHandler {
         this.application = props.application
         this.socket = props.socket
 
-        this.groundSprite = new Sprite()
-        Assets.load(GroundImage).then((loadedTexture) => {
-            loadedTexture.source.scaleMode = 'nearest'
-            this.groundSprite.texture = loadedTexture
-            this.groundSprite.texture.source.wrapMode = 'repeat'
-            this.groundSprite.scale.set(16, 9)
-        })
+        this.groundSprite = AssetHelper.getSpriteAsset('groundSprite')!
+        this.groundSprite.texture.source.wrapMode = 'repeat'
+        this.groundSprite.scale.set(16, 9)
 
         const objectContainer = new Container()
         this.application.stage.addChild(this.groundSprite, objectContainer)
@@ -141,8 +137,8 @@ export class ClientGameHandler extends GameEventHandler {
     updateGroundUVBasedOnPlayerPosition(position: Vector2DTO) {
         const dimensions = ['x', 'y']
         const scale = this.groundSprite.scale
-        this.groundSprite.x = position.x - this.groundSprite.width / 2 + this.groundSprite.width / scale.x / 2
-        this.groundSprite.y = position.y - this.groundSprite.height / 2 + this.groundSprite.height / scale.y / 2
+        this.groundSprite.x = position.x - this.groundSprite.width / scale.x / 2
+        this.groundSprite.y = position.y - this.groundSprite.height / scale.y / 2
 
         dimensions.forEach((dimension) => {
             const isX = dimension === 'x'
