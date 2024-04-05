@@ -3,6 +3,7 @@ import App from './App.tsx'
 import { Application, Renderer } from 'pixi.js'
 import { SetupHelper } from './classes/SetupHelper.ts'
 import '@pixi/gif'
+import { AssetHelper } from './classes/AssetHelper.ts'
 
 const CANVAS_WIDTH = 640
 const CANVAS_HEIGHT = 380
@@ -14,6 +15,9 @@ application
         width: CANVAS_WIDTH,
         height: CANVAS_HEIGHT,
         backgroundColor: 0x7f7f7f,
+    })
+    .then(async () => {
+        await AssetHelper.loadAllSprites()
     })
     .then(() => {
         const clientEventHandler = SetupHelper.createClientHandlerWithEventListeners(socket, application)
