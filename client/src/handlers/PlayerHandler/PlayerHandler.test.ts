@@ -8,13 +8,13 @@ describe(`Testing PlayerHandler`, () => {
 
     let playerHandler: PlayerHandler
 
-    playerHandler = new PlayerHandler(() => {}, application)
+    playerHandler = new PlayerHandler(() => {}, application.stage)
     createPlayerSyncTest(playerHandler!, playerHandler!.handlePlayerTickEvent)
 
-    playerHandler = new PlayerHandler(() => {}, application)
+    playerHandler = new PlayerHandler(() => {}, application.stage)
     createPlayerSyncTest(playerHandler!, playerHandler!.handlePlayerSpawnEvent)
 
-    playerHandler = new PlayerHandler(() => {}, application)
+    playerHandler = new PlayerHandler(() => {}, application.stage)
     test('Should remove a player from the client when that player leaves', () => {
         const mockPlayer = createMockPlayer('player_id_first')
         playerHandler.players = { [mockPlayer.id]: { cleanup: () => {} } as unknown as Player }

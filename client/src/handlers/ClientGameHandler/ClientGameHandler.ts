@@ -8,10 +8,11 @@ import {
     FormatHelper,
 } from '@shared/index'
 import { Socket } from 'socket.io-client'
-import { Application, Renderer } from 'pixi.js'
+import { Application, Assets, Container, Renderer, Sprite, UVs } from 'pixi.js'
 import { PlayerHandler } from '../PlayerHandler/PlayerHandler'
 import { ProjectileHandler } from '../ProjectileHandler/ProjectileHandler'
 import { InputHandler } from '../InputHandler/InputHandler'
+import GroundImage from '@assets/spr_ground.png'
 
 export type ClientGameHandlerProps = {
     socket: Socket & { id: string }
@@ -25,14 +26,26 @@ export class ClientGameHandler extends GameEventHandler {
     playerHandler: PlayerHandler
     projectileHandler: ProjectileHandler
     inputHandler: InputHandler
+    groundSprite: Sprite
 
     constructor(props: ClientGameHandlerProps) {
         super()
         this.application = props.application
         this.socket = props.socket
 
-        this.playerHandler = new PlayerHandler(this.updateGameInformation.bind(this), this.application)
-        this.projectileHandler = new ProjectileHandler(this.application)
+        this.groundSprite = new Sprite()
+        Assets.load(GroundImage).then((loadedTexture) => {
+            loadedTexture.source.scaleMode = 'nearest'
+            this.groundSprite.texture = loadedTexture
+            this.groundSprite.texture.source.wrapMode = 'repeat'
+            this.groundSprite.scale.set(16, 9)
+        })
+
+        const objectContainer = new Container()
+        this.application.stage.addChild(this.groundSprite, objectContainer)
+
+        this.playerHandler = new PlayerHandler(this.updateGameInformation.bind(this), objectContainer)
+        this.projectileHandler = new ProjectileHandler(objectContainer)
         this.inputHandler = new InputHandler(props.canvasSize)
 
         this.socket.on(this.EVENT_GAME_TICK, this.gameTickEvent.bind(this))
@@ -106,17 +119,43 @@ export class ClientGameHandler extends GameEventHandler {
 
     moveCameraWithCurrentPlayer() {
         const currentPlayer = this.playerHandler.players[this.socket.id]
+
         if (currentPlayer) {
+            const xCenter =
+                currentPlayer.position.x + currentPlayer.sprite.width / 2 - this.application.screen.width / 2
+            const yCenter =
+                currentPlayer.position.y + currentPlayer.sprite.height / 2 - this.application.screen.height / 2
+
             this.application.stage.pivot.set(
-                currentPlayer.position.x +
-                    currentPlayer.sprite.width / 2 -
-                    this.application.screen.width / 2 +
-                    currentPlayer.recoilFactor * Math.random() * 2,
-                currentPlayer.position.y +
-                    currentPlayer.sprite.height / 2 -
-                    this.application.screen.height / 2 +
-                    currentPlayer.recoilFactor * Math.random() * 2
+                xCenter + currentPlayer.recoilFactor * Math.random() * 2,
+                yCenter + currentPlayer.recoilFactor * Math.random() * 2
             )
+
+            this.updateGroundUVBasedOnPlayerPosition({
+                x: currentPlayer.position.x - currentPlayer.sprite.width / 2,
+                y: currentPlayer.position.y - currentPlayer.sprite.height / 2,
+            })
         }
+    }
+
+    updateGroundUVBasedOnPlayerPosition(position: Vector2DTO) {
+        const dimensions = ['x', 'y']
+        const scale = this.groundSprite.scale
+        this.groundSprite.x = position.x - this.groundSprite.width / 2 + this.groundSprite.width / scale.x / 2
+        this.groundSprite.y = position.y - this.groundSprite.height / 2 + this.groundSprite.height / scale.y / 2
+
+        dimensions.forEach((dimension) => {
+            const isX = dimension === 'x'
+            const offset = isX ? position.x / this.groundSprite.width : position.y / this.groundSprite.height
+
+            this.groundSprite.texture.uvs[`${dimension}0` as keyof UVs] =
+                (0 + offset) * scale[dimension as keyof Vector2DTO]
+            this.groundSprite.texture.uvs[`${dimension}1` as keyof UVs] =
+                (Number(isX) + offset) * scale[dimension as keyof Vector2DTO]
+            this.groundSprite.texture.uvs[`${dimension}2` as keyof UVs] =
+                (1 + offset) * scale[dimension as keyof Vector2DTO]
+            this.groundSprite.texture.uvs[`${dimension}3` as keyof UVs] =
+                (Number(!isX) + offset) * scale[dimension as keyof Vector2DTO]
+        })
     }
 }
