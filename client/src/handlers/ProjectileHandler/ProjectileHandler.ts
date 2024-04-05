@@ -1,13 +1,13 @@
 import { ProjectileDTO, KeyMap } from '@shared/index'
 import { Projectile } from '../../classes/Projectile'
-import { Application } from 'pixi.js'
+import { Container } from 'pixi.js'
 import { ProjectileExplosionEffect } from '../../classes/effects/ProjectileExplosionEffect'
 
 export class ProjectileHandler {
     projectiles: { [key: string]: Projectile } = {}
-    application: Application
-    constructor(application: Application) {
-        this.application = application
+    container: Container
+    constructor(container: Container) {
+        this.container = container
     }
 
     handleProjectileTickEvent(currentProjectiles: KeyMap<ProjectileDTO>) {
@@ -21,7 +21,7 @@ export class ProjectileHandler {
     }
 
     addProjectile(id: string, dto: ProjectileDTO) {
-        const newProjectile = new Projectile(this.application.stage, dto)
+        const newProjectile = new Projectile(this.container, dto)
         this.projectiles = { ...this.projectiles, ...{ [id]: newProjectile } }
     }
 
@@ -39,9 +39,9 @@ export class ProjectileHandler {
             const projectileDTO = affectedProjectiles[id]
             const projectile = this.projectiles[id]
             if (projectile !== undefined) {
-                projectile.cleanup(this.application.stage)
+                projectile.cleanup(this.container)
                 if (projectileDTO.hasCollision) {
-                    new ProjectileExplosionEffect(this.application.stage, projectileDTO.position)
+                    new ProjectileExplosionEffect(this.container, projectileDTO.position)
                 }
                 delete this.projectiles[id]
             }

@@ -1,23 +1,23 @@
-import { Application } from 'pixi.js'
+import { Container } from 'pixi.js'
 import { Player } from '../../classes/Player'
 import { PlayerDTO, KeyMap, ProjectileDTO } from '@shared/index'
 
 export class PlayerHandler {
     players: { [key: string]: Player } = {}
-    application: Application
+    container: Container
     private updateCallback
-    constructor(updateCallback: () => void, application: Application) {
+    constructor(updateCallback: () => void, container: Container) {
         this.updateCallback = updateCallback
-        this.application = application
+        this.container = container
     }
 
     addPlayer(id: string, dto: PlayerDTO) {
-        this.players = { ...this.players, ...{ [id]: new Player(this.application.stage, dto) } }
+        this.players = { ...this.players, ...{ [id]: new Player(this.container, dto) } }
         this.updateCallback()
     }
 
     removePlayer(id: string) {
-        this.players[id].cleanup(this.application.stage)
+        this.players[id].cleanup(this.container)
         delete this.players[id]
         this.updateCallback()
     }
