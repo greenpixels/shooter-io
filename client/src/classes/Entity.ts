@@ -3,13 +3,12 @@ import { Sprite, Container } from 'pixi.js'
 
 export abstract class Entity<T extends EntityDTO> {
     readonly id: string
-    readonly sprite: Sprite
+    sprite: Sprite
     protected lastPosition: Vector2DTO
 
     constructor(stage: Container, sprite: Sprite, dto: T) {
         this.id = dto.id
         this.sprite = sprite
-        this.sprite.texture.source.scaleMode = 'nearest'
         stage.addChild(this.sprite)
         this.lastPosition = this.sprite.position
     }
