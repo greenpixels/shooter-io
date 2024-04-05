@@ -17,7 +17,7 @@ export class PlayerHandler {
     }
 
     removePlayer(id: string) {
-        this.players[id].cleanup(this.container)
+        this.players[id].cleanup()
         delete this.players[id]
         this.updateCallback()
     }
