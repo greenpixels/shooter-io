@@ -1,6 +1,7 @@
 {
     "name": "@shooter-io/server",
     "scripts": {
+        "test": "vitest run",
         "build": "tsc && esbuild tsc_output/server/src/index.js --platform=node --bundle --minify --outfile=dist/index.js",
         "dev": "ts-node src/index.ts",
         "debug": "node --inspect -r ts-node/register src/index.ts",
