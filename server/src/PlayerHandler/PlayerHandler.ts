@@ -11,6 +11,7 @@ import {
 import { Player } from '../classes/Player'
 import { Projectile } from '../classes/Projectile'
 import { GlobalValuesMap } from '../classes/GlobalValuesMap'
+import { CollisionHandler } from '../CollisionHandler/CollisionHandler'
 
 export class PlayerHandler {
     players: { [key: string]: Player } = {}
@@ -20,7 +21,7 @@ export class PlayerHandler {
     }
 
     addPlayer(socket: Socket) {
-        const newPlayer = new Player(socket.id, { x: 50, y: 50 })
+        const newPlayer = new Player(socket.id, { x: 0, y: 0 })
         this.players[socket.id] = newPlayer
         socket.on(
             this.gameEventHandler.EVENT_PLAYER_MOVE,
@@ -34,11 +35,13 @@ export class PlayerHandler {
             this.gameEventHandler.EVENT_PLAYER_SHOOT,
             this.gameEventHandler.playerShootEvent.bind(this.gameEventHandler)
         )
+        CollisionHandler.setCollisionCell(newPlayer.position, newPlayer.position, newPlayer.id, 'player')
         this.gameEventHandler.playerSpawnEvent({ [socket.id]: DTOConverter.toPlayerDTO(newPlayer) })
     }
 
     removePlayer(socket: Socket) {
         this.gameEventHandler.playerLeaveEvent({ [socket.id]: DTOConverter.toPlayerDTO(this.players[socket.id]) })
+        CollisionHandler.removeFromCollisionGrid(this.players[socket.id].position, socket.id, 'players')
         delete this.players[socket.id]
     }
 
@@ -55,9 +58,11 @@ export class PlayerHandler {
         }
         player.lastShotAt = now
         const projectile = new Projectile(socketId, { ...player.position }, { ...player.aimDirection })
+
         const angle = new Vector2(projectile.direction).angle()
         projectile.position.x += Trigonometry.lengthdirX(60, angle)
         projectile.position.y += Trigonometry.lengthdirY(60, angle)
+        CollisionHandler.setCollisionCell(projectile.position, projectile.position, projectile.id, 'projectile')
         return projectile
     }
 
@@ -76,8 +81,10 @@ export class PlayerHandler {
         if (Math.abs(player.velocity.x) + Math.abs(player.velocity.y) > 0) {
             const angle = new Vector2(player.velocity).angle()
             const baseSpeed = GlobalValuesMap.PLAYER_BASE_SPEED
+            const oldPosition = player.position
             player.position.x += Trigonometry.lengthdirX(baseSpeed, angle)
             player.position.y += Trigonometry.lengthdirY(baseSpeed, angle)
+            CollisionHandler.setCollisionCell(oldPosition, player.position, player.id, 'player')
         }
         playerDtoMap[player.id] = DTOConverter.toPlayerDTO(player)
     }

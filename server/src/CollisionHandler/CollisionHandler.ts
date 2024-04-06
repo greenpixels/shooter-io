@@ -30,13 +30,9 @@ export class CollisionHandler {
         id: string,
         type: 'player' | 'projectile'
     ) {
-        const oldKey = this.getGridCellKeyByPosition(oldPosition)
         const newKey = this.getGridCellKeyByPosition(newPosition)
         const relatedMapName: 'players' | 'projectiles' = `${type}s`
-        const oldMap = this.collisionGridMap[relatedMapName][oldKey]
-        if (oldMap) {
-            delete oldMap[id]
-        }
+        this.removeFromCollisionGrid(oldPosition, id, relatedMapName)
         const newMap = this.collisionGridMap[relatedMapName][newKey]
         if (!newMap) {
             this.collisionGridMap[relatedMapName][newKey] = {}
@@ -44,6 +40,12 @@ export class CollisionHandler {
         this.collisionGridMap[relatedMapName][newKey][id] = true
     }
 
+    /**
+     * Returns all specified objects that are relevant to the current position (all cells surrounding the cell of the defined position, as well as the current cell itself)
+     * @param position Vector
+     * @param type What should be returned
+     * @returns
+     */
     static getAllRelevant(position: Vector2DTO, type: 'players' | 'projectiles'): Array<string> {
         const ids: Array<string> = []
         const offsets: Array<Vector2DTO> = [
@@ -73,6 +75,23 @@ export class CollisionHandler {
         const x = Math.floor(Math.abs(position.x) / CollisionHandler.CELL_SIZE)
         const y = Math.floor(Math.abs(position.y) / CollisionHandler.CELL_SIZE)
         return `${Math.sign(position.x) * x}|${Math.sign(position.y) * y}`
+    }
+
+    /**
+     * Removes an entry from the grid
+     * @param position
+     * @param id
+     * @param type
+     */
+    static removeFromCollisionGrid(position: Vector2DTO, id: string, type: 'players' | 'projectiles') {
+        const key = this.getGridCellKeyByPosition(position)
+        const cell = this.collisionGridMap[type][key]
+        if (cell) {
+            delete cell[id]
+            if (Object.keys(cell).length <= 0) {
+                delete this.collisionGridMap[type][key]
+            }
+        }
     }
 
     static cleanup() {

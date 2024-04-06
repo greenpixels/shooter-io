@@ -25,8 +25,8 @@ describe('Testing CollisionHandler', () => {
         CollisionHandler.setCollisionCell({ x: 0, y: 0 }, { x: 33, y: 35 }, 'some-id', 'player')
         // @ts-expect-error Ignore readonly rule
         const playerMap = CollisionHandler.collisionGridMap.players
-        expect(Object.keys(playerMap).length).toBe(2)
-        expect(Object.keys(playerMap['0|0']).length).toBe(0)
+        expect(Object.keys(playerMap).length).toBe(1)
+        expect(playerMap['0|0']).toBeUndefined()
         expect(Object.keys(playerMap['1|1']).length).toBe(1)
     })
 
@@ -42,5 +42,26 @@ describe('Testing CollisionHandler', () => {
         const ids = CollisionHandler.getAllRelevant({ x: 0, y: 0 }, 'players')
         expect(ids.length).toBe(5)
         expect(ids).not.toContain('some-id6')
+    })
+
+    test('Should clear exisiting own entries after move', () => {
+        for (let i = 0; i < 10; i++) {
+            CollisionHandler.setCollisionCell(
+                { x: i * CollisionHandler.CELL_SIZE, y: i * CollisionHandler.CELL_SIZE },
+                { x: (i + 1) * CollisionHandler.CELL_SIZE, y: (i + 1) * CollisionHandler.CELL_SIZE },
+                'some-id1',
+                'player'
+            )
+        }
+
+        const ids: string[] = []
+        // @ts-expect-error Ignore readonly rule
+        const playerMap = CollisionHandler.collisionGridMap.players
+        Object.keys(playerMap).forEach((grid) => {
+            Object.keys(playerMap[grid]).forEach((id) => {
+                ids.push(id)
+            })
+        })
+        expect(ids.length).toBe(1)
     })
 })
