@@ -26,22 +26,25 @@ function renderPlayerList(
     setOpen: React.Dispatch<React.SetStateAction<boolean>>
 ) {
     return (
-        <table>
-            <tbody className={Style.tablebody}>
-                {players.map((player) => {
-                    return (
-                        <tr
-                            key={player.id}
-                            className={Style.tablerow}>
-                            <td className={Style.tabledata}>
-                                {player.id} {ownId === player.id ? '(You)' : null}
-                            </td>
-                        </tr>
-                    )
-                })}
-                {renderToggleButton(false, setOpen, players.length)}
-            </tbody>
-        </table>
+        <div>
+            <table>
+                <tbody className={Style.tablebody}>
+                    {players.map((player) => {
+                        return (
+                            <tr
+                                key={player.id}
+                                className={Style.tablerow}>
+                                <td className={Style.tabledata}>
+                                    {player.id} {ownId === player.id ? '(You)' : null}
+                                </td>
+                                <td className={Style.tabledata}>{player.score}</td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+            {renderToggleButton(false, setOpen, players.length)}
+        </div>
     )
 }
 

@@ -58,7 +58,9 @@ export class ClientGameHandler extends GameEventHandler {
         const playerDtos = Object.keys(this.playerHandler.players).map((key) => {
             return DTOConverter.toPlayerDTO(this.playerHandler.players[key])
         })
-        playerDtos.sort()
+        playerDtos.sort((a, b) => {
+            return b.score - a.score
+        })
         dispatchEvent(
             new CustomEvent('ongamestatechange', {
                 detail: {

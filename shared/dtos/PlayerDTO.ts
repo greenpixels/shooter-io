@@ -3,5 +3,6 @@ import { Vector2DTO } from './Vector2DTO'
 
 export interface PlayerDTO extends EntityDTO {
     aimDirection: Vector2DTO,
-    level: number
+    level: number,
+    score: number
 }

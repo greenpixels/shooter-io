@@ -55,6 +55,7 @@ export class PlayerHandler {
                 player.impactFactor = 5
             }
         })
+        setTimeout(this.updateCallback, 100)
     }
 
     handlePlayerShootingProjectile(affectedProjectiles: { [key: string]: ProjectileDTO }) {

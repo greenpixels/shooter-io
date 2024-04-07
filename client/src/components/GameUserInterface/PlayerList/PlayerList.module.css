@@ -13,7 +13,7 @@
     width: 100%;
 }
 
-.container > table {
+.container table {
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0;

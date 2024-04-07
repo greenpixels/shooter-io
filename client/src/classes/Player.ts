@@ -9,8 +9,8 @@ export class Player extends Entity<PlayerDTO> {
     gunSprite: Sprite | undefined
     private state: TPlayerState = 'idle'
     private container
-    public level
-
+    level
+    score
     aimDirection: Vector2DTO = { x: 0, y: 0 }
     /**
      * This can be used to scale shake or flash effects. Will be set when the player instance got shot or hurt in any way
@@ -26,6 +26,7 @@ export class Player extends Entity<PlayerDTO> {
         super(container, playerSprite, dto)
         this.container = container
         this.level = dto.level
+        this.score = dto.score
         this.setGunSpriteBasedOnLevel()
         this.sync(dto)
     }
@@ -49,6 +50,7 @@ export class Player extends Entity<PlayerDTO> {
     public sync(dto: PlayerDTO) {
         this.lastPosition = this.position
         this.position = dto.position
+        this.score = dto.score
         const previousLevel = this.level
         this.level = dto.level
         if (previousLevel != this.level) {
@@ -58,13 +60,11 @@ export class Player extends Entity<PlayerDTO> {
         if (!this.isStandingStill() && this.state === 'idle') {
             this.switchSprite(AssetHelper.getSpriteAsset('playerWalk'))
             this.state = 'moving'
-            console.log('Switched to moving')
         }
 
         if (this.isStandingStill() && this.state === 'moving') {
             this.switchSprite(AssetHelper.getSpriteAsset('playerIdle'))
             this.state = 'idle'
-            console.log('Switched to idle')
         }
 
         switch (this.state) {
