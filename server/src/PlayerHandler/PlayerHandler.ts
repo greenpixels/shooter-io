@@ -52,7 +52,7 @@ export class PlayerHandler {
     }
 
     handlePlayerShootEvent(socketId: string, player: Player) {
-        let gunInfo = GunInfo[Math.max(0, Math.min(GunInfo.length - 1, player.level - 1))]
+        const gunInfo = GunInfo[Math.max(0, Math.min(GunInfo.length - 1, player.level - 1))]
         const now = Date.now()
         if (now - player.lastShotAt < gunInfo.delay) {
             return
