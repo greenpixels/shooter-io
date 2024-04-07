@@ -1,6 +1,6 @@
 import { ProjectileDTO, KeyMap } from '@shared/index'
 import { Projectile } from '../../classes/Projectile'
-import { Container, Sprite } from 'pixi.js'
+import { Container } from 'pixi.js'
 import { ProjectileExplosionEffect } from '../../classes/effects/ProjectileExplosionEffect'
 
 export class ProjectileHandler {

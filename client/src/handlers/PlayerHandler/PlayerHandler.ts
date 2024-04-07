@@ -35,7 +35,7 @@ export class PlayerHandler {
             } else {
                 this.addPlayer(playerDto.id, playerDto)
             }
-            if (this.players[id].score > highestScore) {
+            if (this.players[id] && this.players[id].score > highestScore) {
                 highestScoringPlayer = this.players[id]
                 highestScore = highestScoringPlayer.score
             }

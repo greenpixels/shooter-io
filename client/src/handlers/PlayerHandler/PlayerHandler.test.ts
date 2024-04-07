@@ -52,5 +52,11 @@ function createMockPlayer(id: string) {
             y: 0,
         },
         id: id,
+        score: 0,
+        level: 1,
+        position: {
+            x: 0,
+            y: 0,
+        },
     } as PlayerDTO
 }
