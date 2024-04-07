@@ -14,6 +14,7 @@ import M92Sprite from '@assets/guns/spr_m92.png'
 import MP5Sprite from '@assets/guns/spr_mp5.png'
 import RevolverSprite from '@assets/guns/spr_revolver.png'
 import ShotgunSprite from '@assets/guns/spr_shotgun.png'
+import CrownSprite from '@assets/spr_crown.png'
 
 const GET_BEFORE_IMPORT_ERROR =
     "Getting the sprite has failed. Please use 'loadAllSprites' at the beginning of the game before using 'getSpriteAsset'."
@@ -33,6 +34,7 @@ export type TSpriteAssetNames = {
     gunMP5: string
     gunRevolver: string
     gunShotgun: string
+    crownSprite: string
 }
 
 export interface IGameAssets {
@@ -57,7 +59,7 @@ export class AssetHelper {
                 bullet: await Assets.load(BulletSprite),
                 groundSprite: await Assets.load(GroundSprite),
                 explosionImage: await this.loadGif(ExplosionImageAnimation),
-
+                crownSprite: await Assets.load(CrownSprite),
                 gunAK47: await Assets.load(AK47Sprite),
                 gunM15: await Assets.load(M15Sprite),
                 gunLuger: await Assets.load(LugerSprite),

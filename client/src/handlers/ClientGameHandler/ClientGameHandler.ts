@@ -27,6 +27,7 @@ export class ClientGameHandler extends GameEventHandler {
     projectileHandler: ProjectileHandler
     inputHandler: InputHandler
     groundSprite: Sprite
+    crownSprite: Sprite
 
     constructor(props: ClientGameHandlerProps) {
         super()
@@ -37,8 +38,11 @@ export class ClientGameHandler extends GameEventHandler {
         this.groundSprite.texture.source.wrapMode = 'repeat'
         this.groundSprite.scale.set(16, 9)
 
+        this.crownSprite = AssetHelper.getSpriteAsset('crownSprite')
+        this.crownSprite.pivot.y = 10
+
         const objectContainer = new Container()
-        this.application.stage.addChild(this.groundSprite, objectContainer)
+        this.application.stage.addChild(this.groundSprite, objectContainer, this.crownSprite)
 
         this.playerHandler = new PlayerHandler(this.updateGameInformation.bind(this), objectContainer)
         this.projectileHandler = new ProjectileHandler(objectContainer)
@@ -76,10 +80,11 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     gameTickEvent(visiblePlayers: KeyMap<PlayerDTO>, visibleProjectiles: { [key: string]: ProjectileDTO }): void {
-        this.playerHandler.handlePlayerTickEvent(visiblePlayers)
+        this.playerHandler.handlePlayerTickEvent(visiblePlayers, this.crownSprite)
         this.projectileHandler.handleProjectileTickEvent(visibleProjectiles)
         this.moveCameraWithCurrentPlayer()
         this.application.stage.sortChildren()
+        this.crownSprite.pivot.y = 10 + Math.sin(Date.now() / 100)
     }
 
     playerMoveEvent(socketId: string, moveVector: Vector2DTO): void {
@@ -95,7 +100,7 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     playerSpawnEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
-        this.playerHandler.handlePlayerSpawnEvent(affectedPlayers)
+        this.playerHandler.handlePlayerSpawnEvent(affectedPlayers, this.crownSprite)
     }
 
     playerHurtEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
