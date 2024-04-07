@@ -30,7 +30,7 @@ export class ProjectileHandler {
         projectile.position.x += Trigonometry.lengthdirX(baseSpeed, angle)
         projectile.position.y += Trigonometry.lengthdirY(baseSpeed, angle)
         CollisionHandler.setCollisionCell(oldPosition, projectile.position, projectile.id, 'projectile')
-        if (Date.now() - projectile.createdAt > 500) {
+        if (Date.now() - projectile.createdAt >= projectile.lifetime) {
             this.removeProjectile(projectile.id, false)
             isRemoved = true
         }
@@ -41,8 +41,8 @@ export class ProjectileHandler {
                 if (!player) return
                 const distance = new Vector2(player.position).sub(projectile.position).length()
                 if (distance <= 18) {
+                    this.gameEventHandler.playerHandler.hurtPlayer(id, projectile)
                     this.removeProjectile(projectile.id, true)
-                    this.gameEventHandler.playerHurtEvent({ [id]: player })
                     isRemoved = true
                 }
             }

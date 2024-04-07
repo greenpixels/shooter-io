@@ -1,14 +1,16 @@
-import { PlayerDTO, Trigonometry, Vector2DTO, Vector2 } from '@shared/index'
+import { PlayerDTO, Trigonometry, Vector2DTO, Vector2, GunInfo } from '@shared/index'
 import { Entity } from './Entity'
 import { Container, Sprite } from 'pixi.js'
-import { AssetHelper } from './AssetHelper'
+import { AssetHelper, TSpriteAssetNames } from './AssetHelper'
 import { AnimatedGIF } from '@pixi/gif'
 
 export type TPlayerState = 'idle' | 'moving'
 export class Player extends Entity<PlayerDTO> {
-    readonly gunSprite: Sprite
+    gunSprite: Sprite | undefined
     private state: TPlayerState = 'idle'
     private container
+    public level
+
     aimDirection: Vector2DTO = { x: 0, y: 0 }
     /**
      * This can be used to scale shake or flash effects. Will be set when the player instance got shot or hurt in any way
@@ -22,15 +24,36 @@ export class Player extends Entity<PlayerDTO> {
     constructor(container: Container, dto: PlayerDTO) {
         const playerSprite = AssetHelper.getSpriteAsset('playerIdle')!
         super(container, playerSprite, dto)
-        this.gunSprite = AssetHelper.getSpriteAsset('gunSniper', { anchor: { x: 0, y: 0.5 } })!
         this.container = container
-        this.container.addChild(this.gunSprite)
+        this.level = dto.level
+        this.setGunSpriteBasedOnLevel()
         this.sync(dto)
+    }
+
+    setGunSpriteBasedOnLevel() {
+        const gunInfo = GunInfo[this.level - 1]
+        if (gunInfo) {
+            if (this.gunSprite) {
+                this.container.removeChild(this.gunSprite)
+            }
+            const gunSpriteOptions = { anchor: { x: 0, y: 0.5 } }
+            const newGunSprite = AssetHelper.getSpriteAsset(
+                `gun${gunInfo.key}` as keyof TSpriteAssetNames,
+                gunSpriteOptions
+            )
+            this.gunSprite = newGunSprite
+            this.container.addChild(this.gunSprite)
+        }
     }
 
     public sync(dto: PlayerDTO) {
         this.lastPosition = this.position
         this.position = dto.position
+        const previousLevel = this.level
+        this.level = dto.level
+        if (previousLevel != this.level) {
+            this.setGunSpriteBasedOnLevel()
+        }
 
         if (!this.isStandingStill() && this.state === 'idle') {
             this.switchSprite(AssetHelper.getSpriteAsset('playerWalk'))
@@ -74,14 +97,13 @@ export class Player extends Entity<PlayerDTO> {
     }
 
     private syncWeapon(dto: PlayerDTO) {
+        if (!this.gunSprite) return
         this.aimDirection = dto.aimDirection
         const angle = new Vector2(this.aimDirection).angle()
+        const gunDistance = 9
         this.gunSprite.rotation = Trigonometry.angleToRadians(angle)
         this.gunSprite.zIndex = this.sprite.zIndex + Math.sign(this.aimDirection.y) / 2
         if (this.aimDirection.x !== 0) this.gunSprite.scale.y = Math.sign(this.aimDirection.x)
-
-        const gunDistance = 9
-
         this.gunSprite.position = {
             x:
                 this.position.x +
@@ -106,6 +128,8 @@ export class Player extends Entity<PlayerDTO> {
 
     public cleanup(): void {
         this.container.removeChild(this.sprite)
-        this.container.removeChild(this.gunSprite)
+        if (this.gunSprite) {
+            this.container.removeChild(this.gunSprite)
+        }
     }
 }
