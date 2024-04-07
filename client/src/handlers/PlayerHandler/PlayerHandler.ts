@@ -1,4 +1,4 @@
-import { Container } from 'pixi.js'
+import { Container, Sprite } from 'pixi.js'
 import { Player } from '../../classes/Player'
 import { PlayerDTO, KeyMap, ProjectileDTO } from '@shared/index'
 
@@ -22,22 +22,34 @@ export class PlayerHandler {
         this.updateCallback()
     }
 
-    handlePlayerTickEvent(currentPlayers: KeyMap<PlayerDTO>) {
-        this.syncPlayers(currentPlayers)
+    handlePlayerTickEvent(currentPlayers: KeyMap<PlayerDTO>, crownSprite: Sprite) {
+        this.syncPlayers(currentPlayers, crownSprite)
     }
 
-    syncPlayers(currentPlayers: KeyMap<PlayerDTO>) {
+    syncPlayers(currentPlayers: KeyMap<PlayerDTO>, crownSprite: Sprite) {
+        let highestScoringPlayer: Player | undefined
+        let highestScore = -1
         Object.entries(currentPlayers).forEach(([id, playerDto]) => {
             if (this.players[id] !== undefined) {
                 this.players[id].sync(playerDto)
             } else {
                 this.addPlayer(playerDto.id, playerDto)
             }
+            if (this.players[id] && this.players[id].score > highestScore) {
+                highestScoringPlayer = this.players[id]
+                highestScore = highestScoringPlayer.score
+            }
         })
+        if (highestScoringPlayer) {
+            crownSprite.position = {
+                x: highestScoringPlayer.position.x + highestScoringPlayer.sprite.width / 2,
+                y: highestScoringPlayer.position.y,
+            }
+        }
     }
 
-    handlePlayerSpawnEvent(affectedPlayers: KeyMap<PlayerDTO>) {
-        this.syncPlayers(affectedPlayers)
+    handlePlayerSpawnEvent(affectedPlayers: KeyMap<PlayerDTO>, crownSprite: Sprite) {
+        this.syncPlayers(affectedPlayers, crownSprite)
     }
 
     handlePlayerLeaveEvent(affectedPlayers: { [key: string]: PlayerDTO }) {
@@ -55,6 +67,7 @@ export class PlayerHandler {
                 player.impactFactor = 5
             }
         })
+        setTimeout(this.updateCallback, 100)
     }
 
     handlePlayerShootingProjectile(affectedProjectiles: { [key: string]: ProjectileDTO }) {

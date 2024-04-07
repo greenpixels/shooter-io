@@ -6,6 +6,7 @@ export class Player implements PlayerDTO {
     velocity: Vector2DTO = { x: 0, y: 0 }
     aimDirection: Vector2DTO = { x: 0, y: 0 }
     lastShotAt: number
+    score = 0
     level = 1
     maxHealth = 100
     health = this.maxHealth
@@ -18,6 +19,7 @@ export class Player implements PlayerDTO {
 
     setValuesOnRespawn() {
         this.health = this.maxHealth
+        this.score = 0
         this.level = 1
         this.position = { x: 0, y: 0 }
     }

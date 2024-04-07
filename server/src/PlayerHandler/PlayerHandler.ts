@@ -86,6 +86,7 @@ export class PlayerHandler {
 
     hurtPlayer(id: string, projectile: Projectile) {
         const player = this.players[id]
+        const attackingPlayer = this.players[projectile.sourcePlayerId]
         if (!player) {
             return
         }
@@ -94,16 +95,15 @@ export class PlayerHandler {
         if (player.health <= 0) {
             this.gameEventHandler.playerDeathEvent({ [player.id]: player })
             this.respawnPlayer(id)
-            this.rewardPlayerOnKill(projectile.sourcePlayerId)
+            if (attackingPlayer) {
+                attackingPlayer.level++
+                attackingPlayer.score += 1000
+            }
+        } else {
+            if (attackingPlayer) {
+                attackingPlayer.score += attackingPlayer.level * 100
+            }
         }
-    }
-
-    rewardPlayerOnKill(playerId: string) {
-        const player = this.players[playerId]
-        if (!player) {
-            return
-        }
-        player.level++
     }
 
     respawnPlayer(id: string) {
