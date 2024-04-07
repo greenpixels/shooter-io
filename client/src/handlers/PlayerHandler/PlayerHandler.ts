@@ -1,6 +1,6 @@
 import { Container, Sprite } from 'pixi.js'
 import { Player } from '../../classes/Player'
-import { PlayerDTO, KeyMap, ProjectileDTO } from '@shared/index'
+import { PlayerDTO, KeyMap, ProjectileDTO, Vector2, Trigonometry } from '@shared/index'
 
 export class PlayerHandler {
     players: { [key: string]: Player } = {}
@@ -22,11 +22,16 @@ export class PlayerHandler {
         this.updateCallback()
     }
 
-    handlePlayerTickEvent(currentPlayers: KeyMap<PlayerDTO>, crownSprite: Sprite) {
-        this.syncPlayers(currentPlayers, crownSprite)
+    handlePlayerTickEvent(
+        currentPlayers: KeyMap<PlayerDTO>,
+        socketId: string,
+        crownSprite: Sprite,
+        arrowSprite: Sprite
+    ) {
+        this.syncPlayers(currentPlayers, socketId, crownSprite, arrowSprite)
     }
 
-    syncPlayers(currentPlayers: KeyMap<PlayerDTO>, crownSprite: Sprite) {
+    syncPlayers(currentPlayers: KeyMap<PlayerDTO>, socketId: string, crownSprite: Sprite, arrowSprite: Sprite) {
         let highestScoringPlayer: Player | undefined
         let highestScore = -1
         Object.entries(currentPlayers).forEach(([id, playerDto]) => {
@@ -40,16 +45,47 @@ export class PlayerHandler {
                 highestScore = highestScoringPlayer.score
             }
         })
+        const currentPlayer = this.players[socketId]
+        if (!currentPlayer) return
         if (highestScoringPlayer) {
             crownSprite.position = {
                 x: highestScoringPlayer.position.x + highestScoringPlayer.sprite.width / 2,
                 y: highestScoringPlayer.position.y,
             }
+            const targetPlayerPosition = new Vector2(highestScoringPlayer.position)
+            const currentPlayerPosition = new Vector2(currentPlayer.position)
+            if (
+                socketId === highestScoringPlayer.id ||
+                targetPlayerPosition.sub(currentPlayerPosition).length() < 250
+            ) {
+                arrowSprite.visible = false
+            } else {
+                arrowSprite.visible = true
+                arrowSprite.angle = new Vector2(highestScoringPlayer.position).sub(currentPlayer.position).angle()
+                const arrowDistance = 120
+                arrowSprite.position = {
+                    x:
+                        currentPlayer.position.x +
+                        currentPlayer.sprite.width / 2 +
+                        Trigonometry.lengthdirX(arrowDistance, arrowSprite.angle),
+                    y:
+                        currentPlayer.position.y +
+                        currentPlayer.sprite.height / 2 +
+                        Trigonometry.lengthdirY(arrowDistance, arrowSprite.angle),
+                }
+            }
+        } else {
+            arrowSprite.visible = false
         }
     }
 
-    handlePlayerSpawnEvent(affectedPlayers: KeyMap<PlayerDTO>, crownSprite: Sprite) {
-        this.syncPlayers(affectedPlayers, crownSprite)
+    handlePlayerSpawnEvent(
+        affectedPlayers: KeyMap<PlayerDTO>,
+        socketId: string,
+        crownSprite: Sprite,
+        arrowSprite: Sprite
+    ) {
+        this.syncPlayers(affectedPlayers, socketId, crownSprite, arrowSprite)
     }
 
     handlePlayerLeaveEvent(affectedPlayers: { [key: string]: PlayerDTO }) {

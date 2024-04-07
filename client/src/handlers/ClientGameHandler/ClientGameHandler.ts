@@ -28,6 +28,7 @@ export class ClientGameHandler extends GameEventHandler {
     inputHandler: InputHandler
     groundSprite: Sprite
     crownSprite: Sprite
+    arrowSprite: Sprite
 
     constructor(props: ClientGameHandlerProps) {
         super()
@@ -38,11 +39,15 @@ export class ClientGameHandler extends GameEventHandler {
         this.groundSprite.texture.source.wrapMode = 'repeat'
         this.groundSprite.scale.set(16, 9)
 
+        const iconContainer = new Container()
         this.crownSprite = AssetHelper.getSpriteAsset('crownSprite')
+        this.arrowSprite = AssetHelper.getSpriteAsset('arrowSprite')
         this.crownSprite.pivot.y = 10
+        iconContainer.addChild(this.crownSprite)
+        iconContainer.addChild(this.arrowSprite)
 
         const objectContainer = new Container()
-        this.application.stage.addChild(this.groundSprite, objectContainer, this.crownSprite)
+        this.application.stage.addChild(this.groundSprite, objectContainer, iconContainer)
 
         this.playerHandler = new PlayerHandler(this.updateGameInformation.bind(this), objectContainer)
         this.projectileHandler = new ProjectileHandler(objectContainer)
@@ -80,7 +85,7 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     gameTickEvent(visiblePlayers: KeyMap<PlayerDTO>, visibleProjectiles: { [key: string]: ProjectileDTO }): void {
-        this.playerHandler.handlePlayerTickEvent(visiblePlayers, this.crownSprite)
+        this.playerHandler.handlePlayerTickEvent(visiblePlayers, this.socket.id, this.crownSprite, this.arrowSprite)
         this.projectileHandler.handleProjectileTickEvent(visibleProjectiles)
         this.moveCameraWithCurrentPlayer()
         this.application.stage.sortChildren()
@@ -100,7 +105,7 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     playerSpawnEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
-        this.playerHandler.handlePlayerSpawnEvent(affectedPlayers, this.crownSprite)
+        this.playerHandler.handlePlayerSpawnEvent(affectedPlayers, this.socket.id, this.crownSprite, this.arrowSprite)
     }
 
     playerHurtEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
