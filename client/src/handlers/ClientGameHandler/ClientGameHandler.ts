@@ -89,7 +89,7 @@ export class ClientGameHandler extends GameEventHandler {
     }
 
     playerDeathEvent(...args: Array<unknown>): void {
-        throw new Error('Method not implemented.' + args[0])
+        console.log(args)
     }
 
     playerSpawnEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {

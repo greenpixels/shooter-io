@@ -77,6 +77,27 @@ export class PlayerHandler {
         return playerDtoMap
     }
 
+    hurtPlayer(id: string, damage: number) {
+        const player = this.players[id]
+        if (!player) {
+            return
+        }
+        player.health -= damage
+        this.gameEventHandler.playerHurtEvent({ [player.id]: player })
+        if (player.health <= 0) {
+            this.gameEventHandler.playerDeathEvent({ [player.id]: player })
+            this.respawnPlayer(id)
+        }
+    }
+
+    respawnPlayer(id: string) {
+        const player = this.players[id]
+        if (!player) {
+            return
+        }
+        player.setValuesOnRespawn()
+    }
+
     playerTick(player: Player, playerDtoMap: KeyMap<PlayerDTO>) {
         if (Math.abs(player.velocity.x) + Math.abs(player.velocity.y) > 0) {
             const angle = new Vector2(player.velocity).angle()

@@ -6,6 +6,7 @@ import {
     DTOConverter,
     vector2DTOSchema,
     Valid,
+    KeyMap,
 } from '../../../shared/index'
 import { Server } from 'socket.io'
 import { Player } from '../classes/Player'
@@ -66,26 +67,26 @@ export class ServerGameHandler extends GameEventHandler {
         player.aimDirection = aimVector
     }
 
-    playerHurtEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
+    playerHurtEvent(affectedPlayers: KeyMap<PlayerDTO>): void {
         this.server.emit(this.EVENT_PLAYER_HURT, affectedPlayers)
     }
 
-    playerDeathEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
-        throw new Error('Method not implemented.' + affectedPlayers)
+    playerDeathEvent(affectedPlayers: KeyMap<PlayerDTO>): void {
+        this.server.emit(this.EVENT_PLAYER_DEATH, affectedPlayers)
     }
 
-    playerSpawnEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
+    playerSpawnEvent(affectedPlayers: KeyMap<PlayerDTO>): void {
         this.server.emit(this.EVENT_PLAYER_SPAWN, affectedPlayers)
     }
 
-    playerLeaveEvent(affectedPlayers: { [key: string]: PlayerDTO }): void {
+    playerLeaveEvent(affectedPlayers: KeyMap<PlayerDTO>): void {
         this.server.emit(this.EVENT_PLAYER_LEAVE, affectedPlayers)
     }
 
-    projectileSpawnEvent(projectiles: { [key: string]: ProjectileDTO }): void {
+    projectileSpawnEvent(projectiles: KeyMap<ProjectileDTO>): void {
         this.server.emit(this.EVENT_PROJECTILE_SPAWN, projectiles)
     }
-    projectileDestroyEvent(affectedProjectiles: { [key: string]: ProjectileDTO & { hasCollision: boolean } }): void {
+    projectileDestroyEvent(affectedProjectiles: KeyMap<ProjectileDTO & { hasCollision: boolean }>): void {
         this.server.emit(this.EVENT_PROJECTILE_DESTROY, affectedProjectiles)
     }
 }

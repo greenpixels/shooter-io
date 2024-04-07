@@ -7,10 +7,18 @@ export class Player implements PlayerDTO {
     aimDirection: Vector2DTO = { x: 0, y: 0 }
     lastShotAt: number
     level = 1
+    health = 1
+    maxHealth = 1
 
     constructor(socketId: string, position: Vector2DTO) {
         this.id = socketId
         this.position = position
         this.lastShotAt = 0
+    }
+
+    setValuesOnRespawn() {
+        this.health = this.maxHealth
+        this.level = 1
+        this.position = { x: 0, y: 0 }
     }
 }
