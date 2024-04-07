@@ -77,17 +77,27 @@ export class PlayerHandler {
         return playerDtoMap
     }
 
-    hurtPlayer(id: string, damage: number) {
+    hurtPlayer(id: string, projectile: Projectile) {
         const player = this.players[id]
+
         if (!player) {
             return
         }
-        player.health -= damage
+        player.health -= 1 // Should be a attribute inside of projectile
         this.gameEventHandler.playerHurtEvent({ [player.id]: player })
         if (player.health <= 0) {
             this.gameEventHandler.playerDeathEvent({ [player.id]: player })
             this.respawnPlayer(id)
+            this.rewardPlayerOnKill(projectile.sourcePlayerId)
         }
+    }
+
+    rewardPlayerOnKill(playerId: string) {
+        const player = this.players[playerId]
+        if (!player) {
+            return
+        }
+        player.level++
     }
 
     respawnPlayer(id: string) {

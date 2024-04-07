@@ -3,21 +3,36 @@ import { Assets, Sprite, Texture } from 'pixi.js'
 import PlayerWalkAnimation from '@assets/spr_human_walk.gif'
 import BulletSprite from '@assets/spr_bullet.png'
 import GroundSprite from '@assets/spr_ground.png'
-import GunSniperSprite from '@assets/spr_sniper.png'
 import ExplosionImageAnimation from '@assets/spr_explosion.gif'
 import PlayerIdleSprite from '@assets/spr_human1.png'
 import { Vector2DTO } from '@shared/index'
+import AK47Sprite from '@assets/guns/spr_ak47.png'
+import LugerSprite from '@assets/guns/spr_luger.png'
+import M15Sprite from '@assets/guns/spr_m15.png'
+import M24Sprite from '@assets/guns/spr_m24.png'
+import M92Sprite from '@assets/guns/spr_m92.png'
+import MP5Sprite from '@assets/guns/spr_mp5.png'
+import RevolverSprite from '@assets/guns/spr_revolver.png'
+import ShotgunSprite from '@assets/guns/spr_shotgun.png'
 
 const GET_BEFORE_IMPORT_ERROR =
     "Getting the sprite has failed. Please use 'loadAllSprites' at the beginning of the game before using 'getSpriteAsset'."
 
 export type TSpriteAssetNames = {
-    gunSniper: string
     playerWalk: string
     playerIdle: string
     bullet: string
     groundSprite: string
     explosionImage: string
+
+    gunAK47: string
+    gunLuger: string
+    gunM15: string
+    gunM24: string
+    gunM92: string
+    gunMP5: string
+    gunRevolver: string
+    gunShotgun: string
 }
 
 export interface IGameAssets {
@@ -37,12 +52,20 @@ export class AssetHelper {
     static async loadAllSprites() {
         this.assets = {
             sprites: {
-                gunSniper: await Assets.load(GunSniperSprite),
                 playerWalk: await this.loadGif(PlayerWalkAnimation),
                 playerIdle: await Assets.load(PlayerIdleSprite),
                 bullet: await Assets.load(BulletSprite),
                 groundSprite: await Assets.load(GroundSprite),
                 explosionImage: await this.loadGif(ExplosionImageAnimation),
+
+                gunAK47: await Assets.load(AK47Sprite),
+                gunM15: await Assets.load(M15Sprite),
+                gunLuger: await Assets.load(LugerSprite),
+                gunM24: await Assets.load(M24Sprite),
+                gunM92: await Assets.load(M92Sprite),
+                gunMP5: await Assets.load(MP5Sprite),
+                gunRevolver: await Assets.load(RevolverSprite),
+                gunShotgun: await Assets.load(ShotgunSprite),
             },
         }
     }

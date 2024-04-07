@@ -41,7 +41,7 @@ export class ProjectileHandler {
                 if (!player) return
                 const distance = new Vector2(player.position).sub(projectile.position).length()
                 if (distance <= 18) {
-                    this.gameEventHandler.playerHandler.hurtPlayer(id, 1)
+                    this.gameEventHandler.playerHandler.hurtPlayer(id, projectile)
                     this.removeProjectile(projectile.id, true)
                     isRemoved = true
                 }
