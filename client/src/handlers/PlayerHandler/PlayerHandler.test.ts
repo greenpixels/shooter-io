@@ -26,20 +26,22 @@ describe(`Testing PlayerHandler`, () => {
 
 function createPlayerSyncTest(
     playerHandler: PlayerHandler,
-    handleEvent: (players: KeyMap<PlayerDTO>, crownSprite: Sprite) => void
+    handleEvent: (players: KeyMap<PlayerDTO>, socketId: string, crownSprite: Sprite, arrowSprite: Sprite) => void
 ) {
     const mockPlayer = createMockPlayer('player_id_first')
     test(`${handleEvent.name}: Should add a new player if the player does not yet exist on the client`, () => {
+        const mockSprite = { position: { x: 0, y: 0 } } as Sprite
         playerHandler.addPlayer = vi.fn()
-        handleEvent.call(playerHandler, { [mockPlayer.id]: mockPlayer }, { position: { x: 0, y: 0 } } as Sprite)
+        handleEvent.call(playerHandler, { [mockPlayer.id]: mockPlayer }, mockPlayer.id, mockSprite, mockSprite)
         expect(playerHandler.addPlayer).toBeCalled()
     })
 
     test(`${handleEvent.name}: Should sync players if the player already exists on the client`, () => {
         playerHandler.addPlayer = vi.fn()
+        const mockSprite = { position: { x: 0, y: 0 } } as Sprite
         const syncMock = vi.fn()
         playerHandler.players = { [mockPlayer.id]: { sync: syncMock } as unknown as Player }
-        handleEvent.call(playerHandler, { [mockPlayer.id]: mockPlayer }, { position: { x: 0, y: 0 } } as Sprite)
+        handleEvent.call(playerHandler, { [mockPlayer.id]: mockPlayer }, mockPlayer.id, mockSprite, mockSprite)
         expect(playerHandler.addPlayer).not.toBeCalled()
         expect(syncMock).toBeCalled()
     })

@@ -6,6 +6,7 @@ import GroundSprite from '@assets/spr_ground.png'
 import ExplosionImageAnimation from '@assets/spr_explosion.gif'
 import PlayerIdleSprite from '@assets/spr_human1.png'
 import { Vector2DTO } from '@shared/index'
+import ArrowSprite from '@assets/spr_arrow.png'
 import AK47Sprite from '@assets/guns/spr_ak47.png'
 import LugerSprite from '@assets/guns/spr_luger.png'
 import M15Sprite from '@assets/guns/spr_m15.png'
@@ -25,6 +26,7 @@ export type TSpriteAssetNames = {
     bullet: string
     groundSprite: string
     explosionImage: string
+    arrowSprite: string
 
     gunAK47: string
     gunLuger: string
@@ -54,6 +56,7 @@ export class AssetHelper {
     static async loadAllSprites() {
         this.assets = {
             sprites: {
+                arrowSprite: await Assets.load(ArrowSprite),
                 playerWalk: await this.loadGif(PlayerWalkAnimation),
                 playerIdle: await Assets.load(PlayerIdleSprite),
                 bullet: await Assets.load(BulletSprite),
