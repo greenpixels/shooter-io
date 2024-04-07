@@ -6,6 +6,7 @@ export class DTOConverter {
             aimDirection: player.aimDirection,
             id: player.id,
             position: player.position,
+            level: player.level,
         }
     }
 
