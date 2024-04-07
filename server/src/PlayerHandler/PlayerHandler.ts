@@ -7,6 +7,7 @@ import {
     Vector2,
     PlayerDTO,
     KeyMap,
+    GunInfo,
 } from '../../../shared/index'
 import { Player } from '../classes/Player'
 import { Projectile } from '../classes/Projectile'
@@ -51,13 +52,19 @@ export class PlayerHandler {
     }
 
     handlePlayerShootEvent(socketId: string, player: Player) {
-        const MINIMAL_SHOT_DELAY = 1000
+        let gunInfo = GunInfo[Math.max(0, Math.min(GunInfo.length - 1, player.level - 1))]
         const now = Date.now()
-        if (now - player.lastShotAt < MINIMAL_SHOT_DELAY) {
+        if (now - player.lastShotAt < gunInfo.delay) {
             return
         }
         player.lastShotAt = now
-        const projectile = new Projectile(socketId, { ...player.position }, { ...player.aimDirection })
+        const projectile = new Projectile(
+            socketId,
+            { ...player.position },
+            { ...player.aimDirection },
+            gunInfo.projectileLife,
+            gunInfo.damage
+        )
 
         const angle = new Vector2(projectile.direction).angle()
         projectile.position.x += Trigonometry.lengthdirX(60, angle)
@@ -79,11 +86,10 @@ export class PlayerHandler {
 
     hurtPlayer(id: string, projectile: Projectile) {
         const player = this.players[id]
-
         if (!player) {
             return
         }
-        player.health -= 1 // Should be a attribute inside of projectile
+        player.health -= projectile.damage
         this.gameEventHandler.playerHurtEvent({ [player.id]: player })
         if (player.health <= 0) {
             this.gameEventHandler.playerDeathEvent({ [player.id]: player })

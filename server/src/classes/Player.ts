@@ -7,8 +7,8 @@ export class Player implements PlayerDTO {
     aimDirection: Vector2DTO = { x: 0, y: 0 }
     lastShotAt: number
     level = 1
-    health = 1
-    maxHealth = 1
+    maxHealth = 100
+    health = this.maxHealth
 
     constructor(socketId: string, position: Vector2DTO) {
         this.id = socketId

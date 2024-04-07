@@ -30,7 +30,7 @@ export class ProjectileHandler {
         projectile.position.x += Trigonometry.lengthdirX(baseSpeed, angle)
         projectile.position.y += Trigonometry.lengthdirY(baseSpeed, angle)
         CollisionHandler.setCollisionCell(oldPosition, projectile.position, projectile.id, 'projectile')
-        if (Date.now() - projectile.createdAt > 500) {
+        if (Date.now() - projectile.createdAt >= projectile.lifetime) {
             this.removeProjectile(projectile.id, false)
             isRemoved = true
         }

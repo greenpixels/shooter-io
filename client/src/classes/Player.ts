@@ -1,7 +1,7 @@
-import { PlayerDTO, Trigonometry, Vector2DTO, Vector2 } from '@shared/index'
+import { PlayerDTO, Trigonometry, Vector2DTO, Vector2, GunInfo } from '@shared/index'
 import { Entity } from './Entity'
 import { Container, Sprite } from 'pixi.js'
-import { AssetHelper } from './AssetHelper'
+import { AssetHelper, TSpriteAssetNames } from './AssetHelper'
 import { AnimatedGIF } from '@pixi/gif'
 
 export type TPlayerState = 'idle' | 'moving'
@@ -31,38 +31,19 @@ export class Player extends Entity<PlayerDTO> {
     }
 
     setGunSpriteBasedOnLevel() {
-        if (this.level > 7) return
-        if (this.gunSprite) {
-            this.container.removeChild(this.gunSprite)
+        const gunInfo = GunInfo[this.level - 1]
+        if (gunInfo) {
+            if (this.gunSprite) {
+                this.container.removeChild(this.gunSprite)
+            }
+            const gunSpriteOptions = { anchor: { x: 0, y: 0.5 } }
+            const newGunSprite = AssetHelper.getSpriteAsset(
+                `gun${gunInfo.key}` as keyof TSpriteAssetNames,
+                gunSpriteOptions
+            )
+            this.gunSprite = newGunSprite
+            this.container.addChild(this.gunSprite)
         }
-        let newGunSprite: Sprite
-        const gunSpriteOptions = { anchor: { x: 0, y: 0.5 } }
-        switch (this.level) {
-            case 1:
-                newGunSprite = AssetHelper.getSpriteAsset('gunM24', gunSpriteOptions)
-                break
-            case 2:
-                newGunSprite = AssetHelper.getSpriteAsset('gunM15', gunSpriteOptions)
-                break
-            case 3:
-                newGunSprite = AssetHelper.getSpriteAsset('gunAK47', gunSpriteOptions)
-                break
-            case 4:
-                newGunSprite = AssetHelper.getSpriteAsset('gunShotgun', gunSpriteOptions)
-                break
-            case 5:
-                newGunSprite = AssetHelper.getSpriteAsset('gunMP5', gunSpriteOptions)
-                break
-            case 6:
-                newGunSprite = AssetHelper.getSpriteAsset('gunLuger', gunSpriteOptions)
-                break
-            case 7:
-            default:
-                newGunSprite = AssetHelper.getSpriteAsset('gunM92', gunSpriteOptions)
-                break
-        }
-        this.gunSprite = newGunSprite
-        this.container.addChild(this.gunSprite)
     }
 
     public sync(dto: PlayerDTO) {

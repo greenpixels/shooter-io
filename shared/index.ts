@@ -6,7 +6,7 @@ export { DTOConverter } from './classes/DTOConverter'
 export { Vector2 } from './classes/Vector2'
 
 export { Valid } from './decorators/Valid'
-
+export { GunInfo } from './ressources/GunInfo'
 export type { KeyMap } from './types/KeyMap'
 
 export type { EntityDTO } from './dtos/EntityDTO'
